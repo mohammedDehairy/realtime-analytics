@@ -11,23 +11,33 @@ import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.validation.constraints.NotNull;
 
 public final class HeartBeatDTO {
-    private Integer id;
+    private String id;
+
+    private String deviceId;
 
     @DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME)
     @NotNull
     private Timestamp timestamp;
 
-    private Map<String, Object> attributes;
+    private Map<String, String> attributes;
 
     @UniqueElements
     private List<ApplicationEventDTO> events;
 
-    public Integer getId() {
+    public String getId() {
         return this.id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
+    }
+
+    public String getDeviceId() {
+        return this.deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public Timestamp getTimestamp() {
@@ -50,11 +60,11 @@ public final class HeartBeatDTO {
         this.events = events;
     }
 
-    public Map<String, Object> getAttributes() {
+    public Map<String, String> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(Map<String, Object> attributes) {
+    public void setAttributes(Map<String, String> attributes) {
         this.attributes = attributes;
     } 
 

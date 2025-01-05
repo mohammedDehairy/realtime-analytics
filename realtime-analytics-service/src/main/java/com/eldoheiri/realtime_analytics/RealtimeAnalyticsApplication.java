@@ -9,7 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 import com.eldoheiri.realtime_analytics.kafka.producer.MessageQueue;
-import com.eldoheiri.realtime_analytics.kafka.producer.messages.HeartBeatMessage;
+import com.eldoheiri.messaging.messages.HeartBeatMessage;
 import com.eldoheiri.realtime_analytics.security.authentication.JWTUtil;
 import com.eldoheiri.realtime_analytics.services.DeviceService;
 import com.eldoheiri.realtime_analytics.services.HeartBeatService;
@@ -29,7 +29,7 @@ public class RealtimeAnalyticsApplication {
 
     @Bean
     MessageQueue<HeartBeatMessage> heartBeatMessageQueue() {
-		return new MessageQueue<HeartBeatMessage>("heartbeats");
+		return new MessageQueue<HeartBeatMessage>("application.events");
 	}
 
     @Bean

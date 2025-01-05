@@ -21,7 +21,7 @@ public class ApplicationEvent {
     private String type;
 
     @DatabaseColumn(columnName = "payload", castToTypeName = "JSONB")
-    private Map<String, Object> payload;
+    private Map<String, String> payload;
 
     public Integer getId() {
         return this.id;
@@ -56,11 +56,11 @@ public class ApplicationEvent {
         this.type = type;
     }
 
-    public Map<String,Object> getPayload() {
+    public Map<String,String> getPayload() {
         return this.payload;
     }
 
-    public void setPayload(Map<String,Object> payload) {
+    public void setPayload(Map<String,String> payload) {
         this.payload = payload;
     }
 

@@ -25,8 +25,8 @@ public class DeviceService {
             dataStore.insert(device, dbConnection);
             dbConnection.commit();
 
-            deviceDTO.setId(device.getId());
-            deviceDTO.setApplicationId(applicationId);
+            deviceDTO.setId(device.getId().toString());
+            deviceDTO.setApplicationId(applicationId.toString());
             return deviceDTO;
         } catch (IllegalArgumentException | SQLException e) {
             e.printStackTrace();

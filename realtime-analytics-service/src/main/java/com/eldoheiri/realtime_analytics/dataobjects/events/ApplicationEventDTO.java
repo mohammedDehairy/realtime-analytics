@@ -5,30 +5,24 @@ import java.util.Map;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.eldoheiri.realtime_analytics.dataobjects.validators.EnumValidator;
-
 import jakarta.validation.constraints.NotNull;
 
 public class ApplicationEventDTO {
-    private Integer id; 
+    private String id; 
 
     @DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME)
     @NotNull
     private Timestamp timestamp;
 
-    @EnumValidator(
-        enumClass = EventType.class,
-        message = "The event type is not recognized"
-    )
-    private EventType type;
+    private String type;
 
-    private Map<String, Object> attributes;
+    private Map<String, String> attributes;
 
-    public Integer getId() {
+    public String getId() {
         return this.id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -41,19 +35,19 @@ public class ApplicationEventDTO {
     }
 
 
-    public EventType getType() {
+    public String getType() {
         return this.type;
     }
 
-    public void setType(EventType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
-    public Map<String,Object> getAttributes() {
+    public Map<String, String> getAttributes() {
         return this.attributes;
     }
 
-    public void setAttributes(Map<String,Object> payload) {
+    public void setAttributes(Map<String,String> payload) {
         this.attributes = payload;
     }
 

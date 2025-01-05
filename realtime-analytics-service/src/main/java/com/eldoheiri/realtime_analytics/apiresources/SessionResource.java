@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eldoheiri.realtime_analytics.dataobjects.AcknowledgeResponse;
 import com.eldoheiri.realtime_analytics.dataobjects.SessionDTO;
 import com.eldoheiri.realtime_analytics.dataobjects.events.HeartBeatDTO;
 import com.eldoheiri.realtime_analytics.services.HeartBeatService;
@@ -27,7 +28,7 @@ public class SessionResource {
     private HeartBeatService heartBeatService;
     
     @PostMapping
-    public SessionDTO newSession(@Valid @RequestBody SessionDTO sessionRequest, @PathVariable Integer applicationId) {
+    public SessionDTO newSession(@Valid @RequestBody SessionDTO sessionRequest, @PathVariable String applicationId) {
         return sessionService.createNew(sessionRequest, applicationId);
     }
 
@@ -42,7 +43,8 @@ public class SessionResource {
     
 
     @PostMapping("/{sessionId}/heartBeat")
-    public HeartBeatDTO heartBeat(@Valid @RequestBody HeartBeatDTO sessionHeartBeat, @PathVariable Integer sessionId) {
-        return heartBeatService.heartBeat(sessionHeartBeat, sessionId);
+    public AcknowledgeResponse heartBeat(@Valid @RequestBody HeartBeatDTO sessionHeartBeat, @PathVariable String sessionId, @PathVariable String applicationId) {
+        heartBeatService.heartBeatRecieved(sessionHeartBeat, sessionId, applicationId);
+        return new AcknowledgeResponse("success");
     }
 }

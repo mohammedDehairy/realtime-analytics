@@ -31,7 +31,7 @@ public class DataFactory {
             applicationEvent.setPayload(dto.getAttributes());
             applicationEvent.setSessionId(sessionId);
             applicationEvent.setTimestamp(dto.getTimestamp());
-            applicationEvent.setType(dto.getType().name());
+            applicationEvent.setType(dto.getType());
             result.add(applicationEvent);
         }
         return result;

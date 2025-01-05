@@ -16,10 +16,8 @@ CREATE TABLE applications (
 --
 
 CREATE TABLE devices (
-    id             INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    application_id INT NOT NULL,
-    model VARCHAR  NOT NULL,
-    FOREIGN KEY (application_id) REFERENCES applications(id)
+    id     INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    model  VARCHAR  NOT NULL
 );
 
 --

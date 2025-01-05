@@ -7,26 +7,26 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Arrays;
 
 public final class DeviceDTO {
-    private Integer id;
+    private String id;
 
-    private Integer applicationId;
+    private String applicationId;
 
     @NotNull
     private String model;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Integer getApplicationId() {
+    public String getApplicationId() {
         return applicationId;
     }
 
-    public void setApplicationId(Integer applicationId) {
+    public void setApplicationId(String applicationId) {
         this.applicationId = applicationId;
     }
 

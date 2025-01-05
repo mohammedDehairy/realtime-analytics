@@ -1,1 +1,4 @@
+com/eldoheiri/messagequeue/serialization/JsonSerializer.class
+com/eldoheiri/messagequeue/serialization/JsonSerde.class
+com/eldoheiri/messagequeue/serialization/JsonDeserializer.class
 com/eldoheiri/messagequeue/MessageQueueConsumer.class

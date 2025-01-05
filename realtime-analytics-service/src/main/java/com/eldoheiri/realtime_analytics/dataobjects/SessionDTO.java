@@ -7,32 +7,32 @@ import java.sql.Timestamp;
 import com.eldoheiri.realtime_analytics.dataobjects.events.HeartBeatDTO;
 
 public class SessionDTO {
-    private Integer id;
+    private String id;
 
-    private Integer applicationId;
+    private String applicationId;
 
     private String token;
 
     @NotNull
-    private Integer deviceId;
+    private String deviceId;
 
     private Timestamp createAt;
 
     private HeartBeatDTO heartBeat;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Integer getApplicationId() {
+    public String getApplicationId() {
         return applicationId;
     }
 
-    public void setApplicationId(Integer applicationId) {
+    public void setApplicationId(String applicationId) {
         this.applicationId = applicationId;
     }
 
@@ -44,11 +44,11 @@ public class SessionDTO {
         this.token = token;
     }
 
-    public Integer getDeviceId() {
+    public String getDeviceId() {
         return deviceId;
     }
 
-    public void setDeviceId(Integer deviceId) {
+    public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
     }
 
