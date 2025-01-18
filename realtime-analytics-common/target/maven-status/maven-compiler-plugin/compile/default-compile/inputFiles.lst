@@ -1,5 +1,11 @@
+/Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-common/src/main/java/com/eldoheiri/messaging/messages/ApplicationLongKey.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-common/src/main/java/com/eldoheiri/messaging/messages/HeartBeatMessage.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-common/src/main/java/com/eldoheiri/databaseaccess/dataobjects/ApplicationEvent.java
+/Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-common/src/main/java/com/eldoheiri/messaging/dataobjects/Application.java
+/Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-common/src/main/java/com/eldoheiri/messaging/messages/ApplicationMetric.java
+/Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-common/src/main/java/com/eldoheiri/messaging/messages/DailyMetricsRecord.java
+/Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-common/src/main/java/com/eldoheiri/messaging/messages/ApplicationStringKey.java
+/Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-common/src/main/java/com/eldoheiri/messaging/messages/TimestampedWrapper.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-common/src/main/java/com/eldoheiri/messaging/dataobjects/ApplicationEvent.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-common/src/main/java/com/eldoheiri/databaseaccess/dataobjects/Device.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-common/src/main/java/com/eldoheiri/databaseaccess/DataSource.java

@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import com.eldoheiri.messagequeue.serialization.JsonSerde;
+import com.eldoheiri.messaging.messages.ApplicationLongKey;
+import com.eldoheiri.messaging.messages.ApplicationStringKey;
 import com.eldoheiri.messaging.messages.DailyMetricsRecord;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,22 +28,22 @@ public class MessageQueueConsumer {
         String topic = System.getenv("KAFKA_TOPIC");
         StreamsBuilder streamBuilder = new StreamsBuilder();
         KStream<String, String> inputStream = streamBuilder.stream(topic);
-        KStream<Long, Integer> averageDailySessionsPerDeviceStream = calculateAverageSessionsPerDevicePerApplicationPerDay(inputStream);
-        KStream<Long, Integer> totalDailySessionsStream = calculateTotalSessionsPerDayPerApplication(inputStream);
-        KStream<Long, Integer> activeDevicesStream = calculateDailyActiveDevices(inputStream);
-        KStream<Long, DailyMetricsRecord> partialStream1 = averageDailySessionsPerDeviceStream.join(
+        KStream<ApplicationLongKey, Integer> averageDailySessionsPerDeviceStream = calculateAverageSessionsPerDevicePerApplicationPerDay(inputStream);
+        KStream<ApplicationLongKey, Integer> totalDailySessionsStream = calculateTotalSessionsPerDayPerApplication(inputStream);
+        KStream<ApplicationLongKey, Integer> activeDevicesStream = calculateDailyActiveDevices(inputStream);
+        KStream<ApplicationLongKey, DailyMetricsRecord> partialStream1 = averageDailySessionsPerDeviceStream.join(
                 totalDailySessionsStream,
-                (timestamp, averageDailySessions, totalDailySessions) -> {
-                    DailyMetricsRecord record = new DailyMetricsRecord(timestamp);
+                (applicationKey, averageDailySessions, totalDailySessions) -> {
+                    DailyMetricsRecord record = new DailyMetricsRecord(applicationKey.key(), applicationKey.applicationId());
                     record.setAverageSessionsPerDevice(averageDailySessions);
                     record.setTotalSessions(totalDailySessions);
                     return record;
                 },
                 JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofDays(1))
                 );
-        KStream<Long, DailyMetricsRecord> finalStream = partialStream1.join(
+        KStream<ApplicationLongKey, DailyMetricsRecord> finalStream = partialStream1.join(
                 activeDevicesStream,
-                (timestamp, dailyRecord, activeDevices) -> {
+                (applicationKey, dailyRecord, activeDevices) -> {
                     dailyRecord.setActiveDevices(activeDevices);
                     return dailyRecord;
                 },
@@ -58,17 +60,17 @@ public class MessageQueueConsumer {
         }
     }
 
-    public static KStream<Long, Integer> calculateAverageSessionsPerDevicePerApplicationPerDay(KStream<String, String> inputStream) {
+    public static KStream<ApplicationLongKey, Integer> calculateAverageSessionsPerDevicePerApplicationPerDay(KStream<String, String> inputStream) {
         return inputStream.map((key, value) -> {
                     HeartBeatMessage message = parse(value);
                     String deviceId = message.getDeviceId();
                     String applicationId = message.getApplicationId();
                     String sessionId = message.getSessionId();
                     long timestamp = message.getTimestamp();
-                    String newKey = String.format("%s|%s|%s", deviceId, applicationId, Instant.ofEpochMilli(timestamp).truncatedTo(ChronoUnit.DAYS));
+                    ApplicationStringKey newKey = new ApplicationStringKey(applicationId, String.format("%s|%s", deviceId, Instant.ofEpochMilli(timestamp).truncatedTo(ChronoUnit.DAYS)));
                     return new KeyValue<>(newKey, sessionId);
         })
-        .groupByKey(Grouped.with(Serdes.String(), Serdes.String()))
+        .groupByKey(Grouped.with(new JsonSerde<>(ApplicationStringKey.class), Serdes.String()))
         .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofDays(1)))
                 .aggregate(
                         HashMap::new,
@@ -83,7 +85,7 @@ public class MessageQueueConsumer {
                             map.put(key, sessionIds);
                             return map;
                         },
-                        Materialized.with(Serdes.String(), new JsonSerde<>(HashMap.class))
+                        Materialized.with(new JsonSerde<>(ApplicationStringKey.class), new JsonSerde<>(HashMap.class))
                 )
                 .mapValues(map -> {
                     int sum = 0;
@@ -98,21 +100,21 @@ public class MessageQueueConsumer {
                 })
                 .toStream()
                 .map((windowedKey, avgSessions) -> {
-                    long key = windowedKey.window().startTime().toEpochMilli();
+                    ApplicationLongKey key = new ApplicationLongKey(windowedKey.key().applicationId(), windowedKey.window().startTime().toEpochMilli()) ;
                     return new KeyValue<>(key, avgSessions);
                 });
     }
 
-    public static KStream<Long, Integer> calculateTotalSessionsPerDayPerApplication(KStream<String, String> inputStream) {
+    public static KStream<ApplicationLongKey, Integer> calculateTotalSessionsPerDayPerApplication(KStream<String, String> inputStream) {
         return inputStream.map((key, value) -> {
             HeartBeatMessage message = parse(value);
             String applicationId = message.getApplicationId();
             String sessionId = message.getSessionId();
             long timestamp = message.getTimestamp();
-            String newKey = String.format("%s|%s", applicationId, Instant.ofEpochMilli(timestamp).truncatedTo(ChronoUnit.DAYS));
+            ApplicationStringKey newKey = new ApplicationStringKey(applicationId, String.format("%s", Instant.ofEpochMilli(timestamp).truncatedTo(ChronoUnit.DAYS)));
             return new KeyValue<>(newKey, sessionId);
         })
-                .groupByKey(Grouped.with(Serdes.String(), Serdes.String()))
+                .groupByKey(Grouped.with(new JsonSerde<>(ApplicationStringKey.class), Serdes.String()))
         .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofDays(1)))
                 .aggregate(
                         HashSet::new,
@@ -120,27 +122,27 @@ public class MessageQueueConsumer {
                             sessionsSet.add(sessionId);
                             return sessionsSet;
                         },
-                        Materialized.with(Serdes.String(), new JsonSerde<>(HashSet.class))
+                        Materialized.with(new JsonSerde<>(ApplicationStringKey.class), new JsonSerde<>(HashSet.class))
                 )
                 .mapValues(sessionsSet -> sessionsSet.size())
                 .toStream()
                 .map((windowedKey, uniqueSessionsCount) -> {
-                    long key = windowedKey.window().startTime().toEpochMilli();
+                    ApplicationLongKey key = new ApplicationLongKey(windowedKey.key().applicationId(), windowedKey.window().startTime().toEpochMilli()) ;
                     return new KeyValue<>(key, uniqueSessionsCount);
                 });
                // .to("total_sessions_per_application_per_day");
     }
 
-    public static KStream<Long, Integer> calculateDailyActiveDevices(KStream<String, String> inputStream) {
+    public static KStream<ApplicationLongKey, Integer> calculateDailyActiveDevices(KStream<String, String> inputStream) {
         return inputStream.map((key, value) -> {
             HeartBeatMessage message = parse(value);
             String deviceId = message.getDeviceId();
             String applicationId = message.getApplicationId();
             long timestamp = message.getTimestamp();
-            String newKey = String.format("%s|%s", applicationId, Instant.ofEpochMilli(timestamp).truncatedTo(ChronoUnit.DAYS));
+            ApplicationStringKey newKey = new ApplicationStringKey(applicationId, String.format("%s", Instant.ofEpochMilli(timestamp).truncatedTo(ChronoUnit.DAYS)));
             return new KeyValue<>(newKey, deviceId);
         })
-                .groupByKey(Grouped.with(Serdes.String(), Serdes.String()))
+                .groupByKey(Grouped.with(new JsonSerde<>(ApplicationStringKey.class), Serdes.String()))
                 .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofDays(1)))
                 .aggregate(
                         HashSet::new,
@@ -148,12 +150,12 @@ public class MessageQueueConsumer {
                             devicesSet.add(deviceId);
                             return devicesSet;
                         },
-                        Materialized.with(Serdes.String(), new JsonSerde<>(HashSet.class))
+                        Materialized.with(new JsonSerde<>(ApplicationStringKey.class), new JsonSerde<>(HashSet.class))
                 )
                 .mapValues(devicesSet -> devicesSet.size())
                 .toStream()
                 .map((windowedKey, uniqueDevices) -> {
-                    long key = windowedKey.window().startTime().toEpochMilli();
+                    ApplicationLongKey key = new ApplicationLongKey(windowedKey.key().applicationId(), windowedKey.window().startTime().toEpochMilli()) ;
                     return new KeyValue<>(key, uniqueDevices);
                 });
     }

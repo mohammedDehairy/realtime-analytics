@@ -10,6 +10,14 @@ public class DeviceException extends RuntimeException {
         super(cause);
     }
 
+    public DeviceException(String message) {
+        super(message);
+    }
+
+    public DeviceException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     public DeviceException() {
         super();
     }

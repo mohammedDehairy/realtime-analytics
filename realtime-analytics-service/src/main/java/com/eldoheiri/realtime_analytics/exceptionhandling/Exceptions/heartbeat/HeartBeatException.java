@@ -10,6 +10,14 @@ public class HeartBeatException extends RuntimeException {
         super(cause);
     }
 
+    public HeartBeatException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public HeartBeatException(String message) {
+        super(message);
+    }
+
     public HeartBeatException() {
         super();
     }

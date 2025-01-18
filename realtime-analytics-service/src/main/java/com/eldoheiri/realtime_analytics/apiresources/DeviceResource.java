@@ -20,7 +20,7 @@ public class DeviceResource {
     private DeviceService deviceService;
 
     @PostMapping
-    public DeviceDTO newDevice(@Valid @RequestBody DeviceDTO deviceDTO, @PathVariable Integer applicationId) {
+    public DeviceDTO newDevice(@Valid @RequestBody DeviceDTO deviceDTO, @PathVariable String applicationId) {
         return deviceService.newDevice(deviceDTO, applicationId);
     }
 }

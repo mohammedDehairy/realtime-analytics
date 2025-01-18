@@ -1,27 +1,26 @@
 package com.eldoheiri.realtime_analytics.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import com.eldoheiri.datastore.DataStore;
-import com.eldoheiri.databaseaccess.DataSource;
 import com.eldoheiri.realtime_analytics.dataobjects.events.ApplicationEventDTO;
 import com.eldoheiri.realtime_analytics.dataobjects.events.HeartBeatDTO;
 import com.eldoheiri.realtime_analytics.exceptionhandling.Exceptions.heartbeat.HeartBeatException;
 import com.eldoheiri.realtime_analytics.exceptionhandling.Exceptions.messagequeue.MessageQueueException;
 import com.eldoheiri.realtime_analytics.kafka.producer.MessageQueue;
+import com.eldoheiri.realtime_analytics.security.idgeneration.IdentifierUtil;
 import com.eldoheiri.messaging.messages.HeartBeatMessage;
+import com.eldoheiri.messaging.dataobjects.Application;
 import com.eldoheiri.messaging.dataobjects.ApplicationEvent;
 
-import jakarta.validation.Valid;
-
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HeartBeatService {
+
+    @Autowired
+    private IdentifierUtil identifierUtil;
 
     @Autowired
     private MessageQueue<HeartBeatMessage> heartBeatMessageQueue;
@@ -35,7 +34,20 @@ public class HeartBeatService {
         }
     }
 
-    public void heartBeatRecieved(HeartBeatDTO sessionHeartBeat, String sessionId, String applicationId) throws HeartBeatException {
+    public void heartBeatRecieved(HeartBeatDTO sessionHeartBeat, String sessionId, String applicationId) throws HeartBeatException, InvalidKeyException, NoSuchAlgorithmException {
+        if (Application.fromId(applicationId) == null) {
+            throw new HeartBeatException("Application not found");
+        }
+
+        String deviceId = sessionHeartBeat.getDeviceId();
+        if (!identifierUtil.validateIdentifier(applicationId, deviceId)) {
+            throw new HeartBeatException("Invalid device id");
+        }
+
+        if (!identifierUtil.validateIdentifier(sessionId, sessionId)) {
+            throw new HeartBeatException("Invalid session id");
+        }
+
         List<ApplicationEvent> applicationEvents = new ArrayList<>();
         for (ApplicationEventDTO eventDTO : sessionHeartBeat.getEvents()) {
             ApplicationEvent applicationEvent = new ApplicationEvent();
@@ -50,38 +62,5 @@ public class HeartBeatService {
         heartBeatMessage.setDeviceId(sessionHeartBeat.getDeviceId());
         heartBeatMessage.setEvents(applicationEvents);
         send(heartBeatMessage);
-    }
-
-    public HeartBeatDTO insertHeartBeat(@Valid @RequestBody HeartBeatDTO sessionHeartBeat, @PathVariable Integer sessionId) {
-        try (Connection dbConnection = DataSource.getConnection()) {
-            HeartBeatDTO result = insert(sessionHeartBeat, sessionId, dbConnection);
-            dbConnection.commit();
-            return result;
-        } catch (IllegalArgumentException | SQLException e) {
-            e.printStackTrace();
-            throw new HeartBeatException(e);
-        } catch (HeartBeatException e) {
-            e.printStackTrace();
-            throw e;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-    }
-
-    private HeartBeatDTO insert(HeartBeatDTO sessionHeartBeat, Integer sessionId, Connection dbConnection) throws SQLException {
-        DataStore dataStore = new DataStore();
-        com.eldoheiri.databaseaccess.dataobjects.ApplicationEvent heartBeat = DataFactory.createHeartBeatEvent(sessionHeartBeat, sessionId);
-        List<com.eldoheiri.databaseaccess.dataobjects.ApplicationEvent> applicationEvents = DataFactory.createApplicationEvents(sessionHeartBeat, sessionId);
-        dataStore.insert(heartBeat, dbConnection);
-        dataStore.insert(applicationEvents, dbConnection);
-        sessionHeartBeat.setId(heartBeat.getId().toString());
-        if (sessionHeartBeat.getEvents() == null || sessionHeartBeat.getEvents().isEmpty()) {
-            return sessionHeartBeat;
-        }
-        for (int i = 0; i < sessionHeartBeat.getEvents().size(); i++) {
-            sessionHeartBeat.getEvents().get(i).setId(applicationEvents.get(i).getId().toString());
-        }
-        return sessionHeartBeat;
     }
 }

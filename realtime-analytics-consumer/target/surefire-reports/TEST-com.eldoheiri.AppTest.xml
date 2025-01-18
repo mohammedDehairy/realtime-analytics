@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.eldoheiri.AppTest" time="0.012" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.eldoheiri.AppTest" time="0.024" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="17"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -12,7 +12,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="EG"/>
     <property name="sun.boot.library.path" value="/opt/homebrew/Cellar/openjdk@17/17.0.9/libexec/openjdk.jdk/Contents/Home/lib"/>
-    <property name="sun.java.command" value="/Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-consumer/target/surefire/surefirebooter-20250104122652102_3.jar /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-consumer/target/surefire 2025-01-04T12-26-52_066-jvmRun1 surefire-20250104122652102_1tmp surefire_0-20250104122652102_2tmp"/>
+    <property name="sun.java.command" value="/Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-consumer/target/surefire/surefirebooter-20250118115009094_3.jar /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-consumer/target/surefire 2025-01-18T11-50-09_004-jvmRun1 surefire-20250118115009094_1tmp surefire_0-20250118115009094_2tmp"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-consumer/target/test-classes:/Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-consumer/target/classes:/Users/meldehairy/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar:/Users/meldehairy/.m2/repository/org/apache/kafka/kafka-clients/3.7.2/kafka-clients-3.7.2.jar:/Users/meldehairy/.m2/repository/com/github/luben/zstd-jni/1.5.6-4/zstd-jni-1.5.6-4.jar:/Users/meldehairy/.m2/repository/org/lz4/lz4-java/1.8.0/lz4-java-1.8.0.jar:/Users/meldehairy/.m2/repository/org/xerial/snappy/snappy-java/1.1.10.5/snappy-java-1.1.10.5.jar:/Users/meldehairy/.m2/repository/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar:/Users/meldehairy/.m2/repository/org/apache/kafka/kafka-streams/3.7.2/kafka-streams-3.7.2.jar:/Users/meldehairy/.m2/repository/org/rocksdb/rocksdbjni/7.9.2/rocksdbjni-7.9.2.jar:/Users/meldehairy/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.16.2/jackson-annotations-2.16.2.jar:/Users/meldehairy/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.16.2/jackson-databind-2.16.2.jar:/Users/meldehairy/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.16.2/jackson-core-2.16.2.jar:/Users/meldehairy/.m2/repository/com/eldoheiri/realtime-analytics-common/1.0-SNAPSHOT/realtime-analytics-common-1.0-SNAPSHOT.jar:/Users/meldehairy/.m2/repository/com/eldoheiri/datastore/1.0-SNAPSHOT/datastore-1.0-SNAPSHOT.jar:/Users/meldehairy/.m2/repository/org/apache/commons/commons-lang3/3.14.0/commons-lang3-3.14.0.jar:/Users/meldehairy/.m2/repository/com/zaxxer/HikariCP/5.0.0/HikariCP-5.0.0.jar:"/>
@@ -28,7 +28,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
-    <property name="surefire.real.class.path" value="/Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-consumer/target/surefire/surefirebooter-20250104122652102_3.jar"/>
+    <property name="surefire.real.class.path" value="/Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-consumer/target/surefire/surefirebooter-20250118115009094_3.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.runtime.version" value="17.0.9+0"/>
@@ -55,5 +55,5 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.class.version" value="61.0"/>
   </properties>
-  <testcase name="testApp" classname="com.eldoheiri.AppTest" time="0.001"/>
+  <testcase name="testApp" classname="com.eldoheiri.AppTest" time="0.002"/>
 </testsuite>

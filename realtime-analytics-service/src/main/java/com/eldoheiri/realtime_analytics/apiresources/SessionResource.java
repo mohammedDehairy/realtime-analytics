@@ -1,8 +1,9 @@
 package com.eldoheiri.realtime_analytics.apiresources;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.eldoheiri.realtime_analytics.dataobjects.AcknowledgeResponse;
 import com.eldoheiri.realtime_analytics.dataobjects.SessionDTO;
 import com.eldoheiri.realtime_analytics.dataobjects.events.HeartBeatDTO;
+import com.eldoheiri.realtime_analytics.exceptionhandling.Exceptions.heartbeat.HeartBeatException;
 import com.eldoheiri.realtime_analytics.services.HeartBeatService;
 import com.eldoheiri.realtime_analytics.services.SessionService;
 
@@ -32,19 +34,17 @@ public class SessionResource {
         return sessionService.createNew(sessionRequest, applicationId);
     }
 
-    @DeleteMapping("/cleanup")
-    public ResponseEntity<Void> cleanup() {
-        int deletedRows = sessionService.cleanup();
-        if (deletedRows < 1) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.noContent().build();
-    }
-    
-
     @PostMapping("/{sessionId}/heartBeat")
     public AcknowledgeResponse heartBeat(@Valid @RequestBody HeartBeatDTO sessionHeartBeat, @PathVariable String sessionId, @PathVariable String applicationId) {
-        heartBeatService.heartBeatRecieved(sessionHeartBeat, sessionId, applicationId);
+        try {
+            heartBeatService.heartBeatRecieved(sessionHeartBeat, sessionId, applicationId);
+        } catch (InvalidKeyException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            throw new HeartBeatException("Failed to validate device id", e);
+        } catch (HeartBeatException e) {
+            e.printStackTrace();
+            throw e;
+        }
         return new AcknowledgeResponse("success");
     }
 }

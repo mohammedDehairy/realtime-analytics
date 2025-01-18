@@ -1,6 +1,12 @@
 com/eldoheiri/databaseaccess/dataobjects/ApplicationEvent.class
 com/eldoheiri/messaging/messages/HeartBeatMessage.class
+com/eldoheiri/messaging/messages/TimestampedWrapper.class
+com/eldoheiri/messaging/messages/ApplicationMetric.class
+com/eldoheiri/messaging/messages/ApplicationLongKey.class
+com/eldoheiri/databaseaccess/dataobjects/Session.class
+com/eldoheiri/messaging/messages/DailyMetricsRecord.class
 com/eldoheiri/databaseaccess/dataobjects/Device.class
+com/eldoheiri/messaging/messages/ApplicationStringKey.class
 com/eldoheiri/databaseaccess/DataSource.class
 com/eldoheiri/messaging/dataobjects/ApplicationEvent.class
-com/eldoheiri/databaseaccess/dataobjects/Session.class
+com/eldoheiri/messaging/dataobjects/Application.class

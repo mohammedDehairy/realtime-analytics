@@ -4,10 +4,12 @@ public class DailyMetricsRecord {
     private int averageSessionsPerDevice;
     private int totalSessions;
     private int activeDevices;
+    private final String applicationId;
     private final long timestamp;
 
-    public DailyMetricsRecord(long timestamp) {
+    public DailyMetricsRecord(long timestamp, String applicationId) {
         this.timestamp = timestamp;
+        this.applicationId = applicationId;
     }
 
     public void setAverageSessionsPerDevice(int averageSessionsPerDevice) {
@@ -34,6 +36,10 @@ public class DailyMetricsRecord {
         return totalSessions;
     }
 
+    public String getApplicationId() {
+        return applicationId;
+    }
+
     public long getTimestamp() {
         return timestamp;
     }
@@ -44,6 +50,7 @@ public class DailyMetricsRecord {
                 "averageSessionsPerDevice=" + averageSessionsPerDevice +
                 ", totalSessions=" + totalSessions +
                 ", activeDevices=" + activeDevices +
+                ", applicationId='" + applicationId + '\'' +
                 ", timestamp=" + timestamp +
                 '}';
     }

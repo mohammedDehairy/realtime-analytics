@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import com.eldoheiri.realtime_analytics.kafka.producer.MessageQueue;
 import com.eldoheiri.messaging.messages.HeartBeatMessage;
 import com.eldoheiri.realtime_analytics.security.authentication.JWTUtil;
+import com.eldoheiri.realtime_analytics.security.idgeneration.IdentifierUtil;
 import com.eldoheiri.realtime_analytics.services.DeviceService;
 import com.eldoheiri.realtime_analytics.services.HeartBeatService;
 import com.eldoheiri.realtime_analytics.services.SessionService;
@@ -25,6 +26,11 @@ public class RealtimeAnalyticsApplication {
     @Bean
     JWTUtil jwtUtil() {
 		return new JWTUtil();
+	}
+
+	@Bean
+	IdentifierUtil identifierUtil() {
+		return new IdentifierUtil();
 	}
 
     @Bean
