@@ -2,17 +2,11 @@ package com.eldoheiri.realtime_analytics.services;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
 import java.sql.Timestamp;
-import java.sql.SQLException;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.eldoheiri.datastore.DataStore;
-import com.eldoheiri.datastore.sqlpredicatebuilder.basetypes.concretebuilders.SQLPredicateBuilder;
-import com.eldoheiri.databaseaccess.DataSource;
-import com.eldoheiri.databaseaccess.dataobjects.Session;
 import com.eldoheiri.realtime_analytics.dataobjects.SessionDTO;
 import com.eldoheiri.realtime_analytics.exceptionhandling.Exceptions.heartbeat.HeartBeatException;
 import com.eldoheiri.realtime_analytics.exceptionhandling.Exceptions.session.SessionException;

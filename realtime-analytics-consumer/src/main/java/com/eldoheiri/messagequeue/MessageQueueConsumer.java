@@ -1,16 +1,19 @@
 package com.eldoheiri.messagequeue;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
+import com.eldoheiri.messaging.dataobjects.ApplicationEvent;
 import com.eldoheiri.messagequeue.serialization.JsonSerde;
 import com.eldoheiri.messaging.messages.ApplicationLongKey;
 import com.eldoheiri.messaging.messages.ApplicationStringKey;
-import com.eldoheiri.messaging.messages.DailyMetricsRecord;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.common.serialization.Serdes;
@@ -22,56 +25,89 @@ import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.kstream.Materialized;
 import com.eldoheiri.messaging.messages.HeartBeatMessage;
 
+import io.prometheus.client.Gauge;
+import io.prometheus.client.exporter.HTTPServer;
+
 public class MessageQueueConsumer {
 
-    public static void main( String[] args ){
+    private static final Gauge dailyAggregatedMetrics = Gauge.build()
+            .name("daily_aggregated_metrics")
+            .help("Daily aggregated metrics like average sessions per device, total sessions and active devices")
+            .labelNames("topic", "window_start_time")
+            .register();
+
+    public static void main(String[] args) throws IOException {
         String topic = System.getenv("KAFKA_TOPIC");
         StreamsBuilder streamBuilder = new StreamsBuilder();
         KStream<String, String> inputStream = streamBuilder.stream(topic);
-        KStream<ApplicationLongKey, Integer> averageDailySessionsPerDeviceStream = calculateAverageSessionsPerDevicePerApplicationPerDay(inputStream);
-        KStream<ApplicationLongKey, Integer> totalDailySessionsStream = calculateTotalSessionsPerDayPerApplication(inputStream);
-        KStream<ApplicationLongKey, Integer> activeDevicesStream = calculateDailyActiveDevices(inputStream);
-        KStream<ApplicationLongKey, DailyMetricsRecord> partialStream1 = averageDailySessionsPerDeviceStream.join(
-                totalDailySessionsStream,
-                (applicationKey, averageDailySessions, totalDailySessions) -> {
-                    DailyMetricsRecord record = new DailyMetricsRecord(applicationKey.key(), applicationKey.applicationId());
-                    record.setAverageSessionsPerDevice(averageDailySessions);
-                    record.setTotalSessions(totalDailySessions);
-                    return record;
-                },
-                JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofDays(1))
-                );
-        KStream<ApplicationLongKey, DailyMetricsRecord> finalStream = partialStream1.join(
-                activeDevicesStream,
-                (applicationKey, dailyRecord, activeDevices) -> {
-                    dailyRecord.setActiveDevices(activeDevices);
-                    return dailyRecord;
-                },
-                JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofDays(1))
-        );
+        calculateAverageSessionsPerDevicePerApplicationPerDay(
+                inputStream)
+                .foreach((key, value) -> {
+                    System.out.println(key.toString() + " " + value);
+                    dailyAggregatedMetrics.labels("average_daily_sessions_per_device_" + key.applicationId(),
+                            Instant.ofEpochMilli(key.timestampe()).toString()).set(value);
+                });
+        calculateTotalSessionsPerDayPerApplication(
+                inputStream)
+                .foreach((key, value) -> {
+                    System.out.println(key.toString() + " " + value);
+                    dailyAggregatedMetrics.labels("total_daily_sessions_" + key.applicationId(),
+                            Instant.ofEpochMilli(key.timestampe()).toString()).set(value);
+                });
+        calculateDailyActiveDevices(inputStream)
+                .foreach((key, value) -> {
+                    System.out.println(key.toString() + " " + value);
+                    dailyAggregatedMetrics.labels("daily_active_devices_" + key.applicationId(),
+                            Instant.ofEpochMilli(key.timestampe()).toString()).set(value);
+                });
+        calculateDailyCountOfEventType(inputStream)
+                .foreach((key, value) -> {
+                    System.out.println(key.toString() + " " + value);
+                    dailyAggregatedMetrics.labels("daily_" + key.eventType() + "_count_" + key.applicationId(),
+                            Instant.ofEpochMilli(key.timestampe()).toString()).set(value);
+                });
+        // KStream<ApplicationLongKey, DailyMetricsRecord> partialStream1 =
+        // averageDailySessionsPerDeviceStream.join(
+        // totalDailySessionsStream,
+        // (applicationKey, averageDailySessions, totalDailySessions) -> {
+        // DailyMetricsRecord record = new
+        // DailyMetricsRecord(applicationKey.timestampe(),
+        // applicationKey.applicationId());
+        // record.setAverageSessionsPerDevice(averageDailySessions);
+        // record.setTotalSessions(totalDailySessions);
+        // return record;
+        // },
+        // JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofDays(1)));
+        // KStream<ApplicationLongKey, DailyMetricsRecord> finalStream =
+        // partialStream1.join(
+        // activeDevicesStream,
+        // (applicationKey, dailyRecord, activeDevices) -> {
+        // dailyRecord.setActiveDevices(activeDevices);
+        // return dailyRecord;
+        // },
+        // JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofDays(1)));
 
-        finalStream.foreach((timestamp, dailyRecord) -> {
-            System.out.println(dailyRecord.toString());
-        });
-
-
-        try (KafkaStreams streams = new KafkaStreams(streamBuilder.build(), createConfig())) {
+        try (KafkaStreams streams = new KafkaStreams(streamBuilder.build(), createConfig());
+                // Start Prometheus HTTP server
+                HTTPServer server = new HTTPServer(9292)) {
             streams.start();
         }
     }
 
-    public static KStream<ApplicationLongKey, Integer> calculateAverageSessionsPerDevicePerApplicationPerDay(KStream<String, String> inputStream) {
+    private static KStream<ApplicationLongKey, Integer> calculateAverageSessionsPerDevicePerApplicationPerDay(
+            KStream<String, String> inputStream) {
         return inputStream.map((key, value) -> {
-                    HeartBeatMessage message = parse(value);
-                    String deviceId = message.getDeviceId();
-                    String applicationId = message.getApplicationId();
-                    String sessionId = message.getSessionId();
-                    long timestamp = message.getTimestamp();
-                    ApplicationStringKey newKey = new ApplicationStringKey(applicationId, String.format("%s|%s", deviceId, Instant.ofEpochMilli(timestamp).truncatedTo(ChronoUnit.DAYS)));
-                    return new KeyValue<>(newKey, sessionId);
+            HeartBeatMessage message = parse(value);
+            String deviceId = message.getDeviceId();
+            String applicationId = message.getApplicationId();
+            String sessionId = message.getSessionId();
+            long timestamp = message.getTimestamp();
+            ApplicationStringKey newKey = new ApplicationStringKey(applicationId, "session",
+                    String.format("%s|%s", deviceId, Instant.ofEpochMilli(timestamp).truncatedTo(ChronoUnit.DAYS)));
+            return new KeyValue<>(newKey, sessionId);
         })
-        .groupByKey(Grouped.with(new JsonSerde<>(ApplicationStringKey.class), Serdes.String()))
-        .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofDays(1)))
+                .groupByKey(Grouped.with(new JsonSerde<>(ApplicationStringKey.class), Serdes.String()))
+                .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofDays(1)))
                 .aggregate(
                         HashMap::new,
                         (key, sessionId, map) -> {
@@ -85,11 +121,10 @@ public class MessageQueueConsumer {
                             map.put(key, sessionIds);
                             return map;
                         },
-                        Materialized.with(new JsonSerde<>(ApplicationStringKey.class), new JsonSerde<>(HashMap.class))
-                )
+                        Materialized.with(new JsonSerde<>(ApplicationStringKey.class), new JsonSerde<>(HashMap.class)))
                 .mapValues(map -> {
                     int sum = 0;
-                    for (var key: map.keySet()) {
+                    for (var key : map.keySet()) {
                         var value = map.get(key);
                         if (!(value instanceof HashSet set)) {
                             continue;
@@ -100,46 +135,52 @@ public class MessageQueueConsumer {
                 })
                 .toStream()
                 .map((windowedKey, avgSessions) -> {
-                    ApplicationLongKey key = new ApplicationLongKey(windowedKey.key().applicationId(), windowedKey.window().startTime().toEpochMilli()) ;
+                    ApplicationLongKey key = new ApplicationLongKey(windowedKey.key().applicationId(),
+                            windowedKey.key().eventType(),
+                            windowedKey.window().startTime().toEpochMilli());
                     return new KeyValue<>(key, avgSessions);
                 });
     }
 
-    public static KStream<ApplicationLongKey, Integer> calculateTotalSessionsPerDayPerApplication(KStream<String, String> inputStream) {
+    private static KStream<ApplicationLongKey, Integer> calculateTotalSessionsPerDayPerApplication(
+            KStream<String, String> inputStream) {
         return inputStream.map((key, value) -> {
             HeartBeatMessage message = parse(value);
             String applicationId = message.getApplicationId();
             String sessionId = message.getSessionId();
             long timestamp = message.getTimestamp();
-            ApplicationStringKey newKey = new ApplicationStringKey(applicationId, String.format("%s", Instant.ofEpochMilli(timestamp).truncatedTo(ChronoUnit.DAYS)));
+            ApplicationStringKey newKey = new ApplicationStringKey(applicationId, "session",
+                    String.format("%s", Instant.ofEpochMilli(timestamp).truncatedTo(ChronoUnit.DAYS)));
             return new KeyValue<>(newKey, sessionId);
         })
                 .groupByKey(Grouped.with(new JsonSerde<>(ApplicationStringKey.class), Serdes.String()))
-        .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofDays(1)))
+                .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofDays(1)))
                 .aggregate(
                         HashSet::new,
                         (key, sessionId, sessionsSet) -> {
                             sessionsSet.add(sessionId);
                             return sessionsSet;
                         },
-                        Materialized.with(new JsonSerde<>(ApplicationStringKey.class), new JsonSerde<>(HashSet.class))
-                )
+                        Materialized.with(new JsonSerde<>(ApplicationStringKey.class), new JsonSerde<>(HashSet.class)))
                 .mapValues(sessionsSet -> sessionsSet.size())
                 .toStream()
                 .map((windowedKey, uniqueSessionsCount) -> {
-                    ApplicationLongKey key = new ApplicationLongKey(windowedKey.key().applicationId(), windowedKey.window().startTime().toEpochMilli()) ;
+                    ApplicationLongKey key = new ApplicationLongKey(windowedKey.key().applicationId(),
+                            windowedKey.key().eventType(),
+                            windowedKey.window().startTime().toEpochMilli());
                     return new KeyValue<>(key, uniqueSessionsCount);
                 });
-               // .to("total_sessions_per_application_per_day");
     }
 
-    public static KStream<ApplicationLongKey, Integer> calculateDailyActiveDevices(KStream<String, String> inputStream) {
+    private static KStream<ApplicationLongKey, Integer> calculateDailyActiveDevices(
+            KStream<String, String> inputStream) {
         return inputStream.map((key, value) -> {
             HeartBeatMessage message = parse(value);
             String deviceId = message.getDeviceId();
             String applicationId = message.getApplicationId();
             long timestamp = message.getTimestamp();
-            ApplicationStringKey newKey = new ApplicationStringKey(applicationId, String.format("%s", Instant.ofEpochMilli(timestamp).truncatedTo(ChronoUnit.DAYS)));
+            ApplicationStringKey newKey = new ApplicationStringKey(applicationId, "session",
+                    String.format("%s", Instant.ofEpochMilli(timestamp).truncatedTo(ChronoUnit.DAYS)));
             return new KeyValue<>(newKey, deviceId);
         })
                 .groupByKey(Grouped.with(new JsonSerde<>(ApplicationStringKey.class), Serdes.String()))
@@ -150,13 +191,43 @@ public class MessageQueueConsumer {
                             devicesSet.add(deviceId);
                             return devicesSet;
                         },
-                        Materialized.with(new JsonSerde<>(ApplicationStringKey.class), new JsonSerde<>(HashSet.class))
-                )
+                        Materialized.with(new JsonSerde<>(ApplicationStringKey.class), new JsonSerde<>(HashSet.class)))
                 .mapValues(devicesSet -> devicesSet.size())
                 .toStream()
                 .map((windowedKey, uniqueDevices) -> {
-                    ApplicationLongKey key = new ApplicationLongKey(windowedKey.key().applicationId(), windowedKey.window().startTime().toEpochMilli()) ;
+                    ApplicationLongKey key = new ApplicationLongKey(windowedKey.key().applicationId(),
+                            windowedKey.key().eventType(),
+                            windowedKey.window().startTime().toEpochMilli());
                     return new KeyValue<>(key, uniqueDevices);
+                });
+    }
+
+    private static KStream<ApplicationLongKey, Integer> calculateDailyCountOfEventType(
+            KStream<String, String> inputStream) {
+        return inputStream.flatMap((key, value) -> {
+            List<KeyValue<ApplicationStringKey, ApplicationEvent>> result = new ArrayList<>();
+            HeartBeatMessage message = parse(value);
+            List<ApplicationEvent> events = message.getEvents();
+            for (ApplicationEvent event : events) {
+                String applicationId = message.getApplicationId();
+                String eventType = event.getType();
+                long timestamp = event.getTimestamp();
+                ApplicationStringKey newKey = new ApplicationStringKey(applicationId, eventType, String.format("%s",
+                        Instant.ofEpochMilli(timestamp).truncatedTo(ChronoUnit.DAYS)));
+                result.add(new KeyValue<>(newKey, event));
+            }
+            return result;
+        })
+                .groupByKey(Grouped.with(new JsonSerde<>(ApplicationStringKey.class),
+                        new JsonSerde<>(ApplicationEvent.class)))
+                .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofDays(1)))
+                .count()
+                .toStream()
+                .map((windowedKey, eventCount) -> {
+                    ApplicationLongKey key = new ApplicationLongKey(windowedKey.key().applicationId(),
+                            windowedKey.key().eventType(),
+                            windowedKey.window().startTime().toEpochMilli());
+                    return new KeyValue<>(key, eventCount.intValue());
                 });
     }
 
@@ -181,5 +252,4 @@ public class MessageQueueConsumer {
         return properties;
     }
 
-    
 }
