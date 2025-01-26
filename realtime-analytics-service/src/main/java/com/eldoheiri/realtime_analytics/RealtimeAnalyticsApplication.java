@@ -35,7 +35,7 @@ public class RealtimeAnalyticsApplication {
 
     @Bean
     MessageQueue<HeartBeatMessage> heartBeatMessageQueue() {
-		return new MessageQueue<HeartBeatMessage>("application.events");
+		return new MessageQueue<HeartBeatMessage>(System.getenv("KAFKA_TOPIC"));
 	}
 
     @Bean

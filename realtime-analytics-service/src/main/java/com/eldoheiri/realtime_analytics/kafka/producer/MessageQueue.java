@@ -17,9 +17,9 @@ public final class MessageQueue<MessageType> {
 
     public MessageQueue(String topic) {
         Properties properties = new Properties();
-        properties.put("bootstrap.servers", "localhost:9092");
-        properties.put("key.serlializer", "org.apache.kafka.common.serialization.StringSerializer");
-        properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        properties.put("bootstrap.servers", System.getenv("KAFKA_BOOTSTRAP_SERVERS"));
+        properties.put("key.serializer", org.apache.kafka.common.serialization.StringSerializer.class);
+        properties.put("value.serializer", org.apache.kafka.common.serialization.StringSerializer.class);
         properties.put("acks", "all");
 
         this.producer = new KafkaProducer<>(properties);

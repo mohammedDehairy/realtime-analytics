@@ -1,5 +1,10 @@
 # Compiled class file
 *.class
+*target/*
+
+# IDE's
+.vscode/*
+.idea/*
 
 # Log file
 *.log

@@ -1,8 +1,0 @@
-com/eldoheiri/messaging/messages/HeartBeatMessage.class
-com/eldoheiri/messaging/messages/TimestampedWrapper.class
-com/eldoheiri/messaging/messages/ApplicationMetric.class
-com/eldoheiri/messaging/messages/ApplicationLongKey.class
-com/eldoheiri/messaging/messages/DailyMetricsRecord.class
-com/eldoheiri/messaging/messages/ApplicationStringKey.class
-com/eldoheiri/messaging/dataobjects/ApplicationEvent.class
-com/eldoheiri/messaging/dataobjects/Application.class
