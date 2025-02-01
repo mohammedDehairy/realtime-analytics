@@ -26,7 +26,7 @@ public final class IdentifierUtil {
         SecretKeySpec secretKey = new SecretKeySpec(Base64.getDecoder().decode(secretKeyString), "HmacSHA256");
         mac.init(secretKey);
         byte[] hash = mac.doFinal(newIdWithApplicationId.getBytes());
-        String hmacBase64 = Base64.getEncoder().encodeToString(hash);
+        String hmacBase64 = Base64.getUrlEncoder().encodeToString(hash);
 
         return newIdentifier + "." + hmacBase64;
     }
@@ -44,7 +44,7 @@ public final class IdentifierUtil {
         SecretKeySpec secretKey = new SecretKeySpec(Base64.getDecoder().decode(secretKeyString), "HmacSHA256");
         mac.init(secretKey);
         byte[] hash = mac.doFinal(idWithApplicationId.getBytes());
-        String hmacBase64 = Base64.getEncoder().encodeToString(hash);
+        String hmacBase64 = Base64.getUrlEncoder().encodeToString(hash);
 
         return hmacBase64.equals(parts[1]);
     }

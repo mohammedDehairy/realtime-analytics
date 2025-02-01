@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.Collections;
+import java.util.concurrent.ExecutionException;
 
 import com.eldoheiri.messaging.dataobjects.ApplicationEvent;
 import com.eldoheiri.messagequeue.serialization.JsonSerde;
@@ -23,6 +25,9 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.NewTopic;
 import com.eldoheiri.messaging.messages.HeartBeatMessage;
 
 import io.prometheus.client.Gauge;
@@ -36,8 +41,9 @@ public class MessageQueueConsumer {
             .labelNames("topic", "window_start_time")
             .register();
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
         String topic = System.getenv("KAFKA_TOPIC");
+        createTopicIfDoesntExist(topic);
         StreamsBuilder streamBuilder = new StreamsBuilder();
         KStream<String, String> inputStream = streamBuilder.stream(topic);
         calculateAverageSessionsPerDevicePerApplicationPerDay(
@@ -91,6 +97,23 @@ public class MessageQueueConsumer {
                 // Start Prometheus HTTP server
                 HTTPServer server = new HTTPServer(9292)) {
             streams.start();
+        }
+    }
+
+    private static void createTopicIfDoesntExist(String topicName) throws InterruptedException, ExecutionException {
+        Properties properties = new Properties();
+        properties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, System.getenv("KAFKA_BOOTSTRAP_SERVERS"));
+
+        try (AdminClient adminClient = AdminClient.create(properties)) {
+            if (adminClient.listTopics().names().get().contains(topicName)) {
+                return;
+            }
+
+            NewTopic newTopic = new NewTopic(topicName, 1, (short) 1);
+            adminClient.createTopics(Collections.singletonList(newTopic)).all().get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
@@ -247,8 +270,8 @@ public class MessageQueueConsumer {
         Properties properties = new Properties();
         properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.put(StreamsConfig.APPLICATION_ID_CONFIG, groupId);
-        properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.StringSerde.class);
-        properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.StringSerde.class);
+        properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+        properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         return properties;
     }
 

@@ -37,7 +37,7 @@ public class SessionResource {
     @PostMapping("/{sessionId}/heartBeat")
     public AcknowledgeResponse heartBeat(@Valid @RequestBody HeartBeatDTO sessionHeartBeat, @PathVariable String sessionId, @PathVariable String applicationId) {
         try {
-            heartBeatService.heartBeatRecieved(sessionHeartBeat, sessionId, applicationId);
+            heartBeatService.heartBeatRecieved(sessionHeartBeat, sessionHeartBeat.getDeviceId(), sessionId, applicationId);
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
             e.printStackTrace();
             throw new HeartBeatException("Failed to validate device id", e);

@@ -31,7 +31,7 @@ public class SessionService {
         }
 
         try {
-            if (!identifierUtil.validateIdentifier(applicationId, applicationId)) {
+            if (!identifierUtil.validateIdentifier(applicationId, sessionRequest.getDeviceId())) {
                 throw new SessionException("Invalid device id");
             }
 
@@ -43,9 +43,10 @@ public class SessionService {
             response.setToken(jwtUtil.generateTokenString(sessionId, tokenExpiration));
             response.setDeviceId(sessionRequest.getDeviceId());
             response.setCreateAt(new Timestamp(System.currentTimeMillis()));
+            response.setHeartBeat(sessionRequest.getHeartBeat());
 
             if (sessionRequest.getHeartBeat() != null) {
-                heartBeatService.heartBeatRecieved(sessionRequest.getHeartBeat(), sessionId, applicationId);
+                heartBeatService.heartBeatRecieved(sessionRequest.getHeartBeat(), sessionRequest.getDeviceId(), sessionId, applicationId);
             }
             return response;
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {

@@ -34,17 +34,16 @@ public class HeartBeatService {
         }
     }
 
-    public void heartBeatRecieved(HeartBeatDTO sessionHeartBeat, String sessionId, String applicationId) throws HeartBeatException, InvalidKeyException, NoSuchAlgorithmException {
+    public void heartBeatRecieved(HeartBeatDTO sessionHeartBeat, String deviceId, String sessionId, String applicationId) throws HeartBeatException, InvalidKeyException, NoSuchAlgorithmException {
         if (Application.fromId(applicationId) == null) {
             throw new HeartBeatException("Application not found");
         }
 
-        String deviceId = sessionHeartBeat.getDeviceId();
         if (!identifierUtil.validateIdentifier(applicationId, deviceId)) {
             throw new HeartBeatException("Invalid device id");
         }
 
-        if (!identifierUtil.validateIdentifier(sessionId, sessionId)) {
+        if (!identifierUtil.validateIdentifier(applicationId, sessionId)) {
             throw new HeartBeatException("Invalid session id");
         }
 
