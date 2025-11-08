@@ -13,7 +13,7 @@ import com.eldoheiri.realtime_analytics.services.DeviceService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/v1/{applicationId}/device")
+@RequestMapping("/api/v1/{applicationId}/devices")
 public class DeviceResource {
 
     @Autowired

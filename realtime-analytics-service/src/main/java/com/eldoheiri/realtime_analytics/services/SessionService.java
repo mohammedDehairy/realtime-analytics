@@ -46,6 +46,7 @@ public class SessionService {
             response.setHeartBeat(sessionRequest.getHeartBeat());
 
             if (sessionRequest.getHeartBeat() != null) {
+                sessionRequest.getHeartBeat().setDeviceId(sessionRequest.getDeviceId());
                 heartBeatService.heartBeatRecieved(sessionRequest.getHeartBeat(), sessionRequest.getDeviceId(), sessionId, applicationId);
             }
             return response;

@@ -24,8 +24,10 @@
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/dataobjects/error/ErrorResponse.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/security/authentication/ApiKeyAuthentication.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/security/idgeneration/IdentifierUtil.java
+/Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/applicationstartup/configuration/DruidConfigService.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/dataobjects/events/HeartBeatDTO.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/security/authentication/AdminJwtRequestFilter.java
+/Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/applicationstartup/configuration/DruidConfigRunner.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/dataobjects/events/ApplicationEventDTO.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/exceptionhandling/ValidationExceptionController.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/exceptionhandling/ServerExceptionController.java

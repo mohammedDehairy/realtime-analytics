@@ -1,0 +1,43 @@
+{
+  "type": "kafka",
+  "dataSchema": {
+    "dataSource": "realtime_analytics_data",
+    "timestampSpec": {
+      "column": "timestamp",
+      "format": "auto"
+    },
+    "dimensionsSpec": {
+      "dimensions": [],
+      "useSchemaDiscovery": true 
+    },
+    "metricsSpec": [
+      {
+        "type": "count",
+        "name": "count"
+      }
+    ],
+    "granularitySpec": {
+      "type": "uniform",
+      "segmentGranularity": "HOUR", 
+      "queryGranularity": "MINUTE" 
+    }
+  },
+  "tuningConfig": {
+    "type": "kafka",
+    "maxRowsPerSegment": 5000000,
+    "maxPendingBatches": 5
+  },
+  "ioConfig": {
+    "type": "kafka",
+    "topic": "realtime-analytics",
+    "inputFormat": {
+      "type": "json"
+    },
+    "consumerProperties": {
+      "bootstrap.servers": "kafka:9092" 
+    },
+    "taskCount": 1,
+    "replicas": 1,
+    "taskDuration": "PT1M" 
+  }
+}

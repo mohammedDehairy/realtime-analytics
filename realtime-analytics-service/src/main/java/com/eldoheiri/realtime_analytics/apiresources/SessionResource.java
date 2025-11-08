@@ -20,7 +20,7 @@ import com.eldoheiri.realtime_analytics.services.SessionService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/v1/{applicationId}/session")
+@RequestMapping("/api/v1/{applicationId}/sessions")
 public class SessionResource {
 
     @Autowired
@@ -34,7 +34,7 @@ public class SessionResource {
         return sessionService.createNew(sessionRequest, applicationId);
     }
 
-    @PostMapping("/{sessionId}/heartBeat")
+    @PostMapping("/{sessionId}/heartBeats")
     public AcknowledgeResponse heartBeat(@Valid @RequestBody HeartBeatDTO sessionHeartBeat, @PathVariable String sessionId, @PathVariable String applicationId) {
         try {
             heartBeatService.heartBeatRecieved(sessionHeartBeat, sessionHeartBeat.getDeviceId(), sessionId, applicationId);
