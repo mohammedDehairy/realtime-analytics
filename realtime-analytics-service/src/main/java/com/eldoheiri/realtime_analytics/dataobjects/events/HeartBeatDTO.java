@@ -14,8 +14,6 @@ import jakarta.validation.constraints.NotNull;
 public final class HeartBeatDTO {
     private String id;
 
-    private String deviceId;
-
     @DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME)
     @NotNull
     private Timestamp timestamp;
@@ -33,14 +31,6 @@ public final class HeartBeatDTO {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getDeviceId() {
-        return this.deviceId;
-    }
-
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
     }
 
     public Timestamp getTimestamp() {
@@ -125,4 +115,3 @@ public final class HeartBeatDTO {
     }
     
 }
-

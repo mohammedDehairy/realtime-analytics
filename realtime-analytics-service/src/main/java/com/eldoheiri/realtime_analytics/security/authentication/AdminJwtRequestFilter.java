@@ -1,5 +1,6 @@
 package com.eldoheiri.realtime_analytics.security.authentication;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -10,7 +11,7 @@ public class AdminJwtRequestFilter extends JwtRequestFilter {
     }
 
     @Override
-    public boolean validateTokenSubject(String tokenSubject, HttpServletRequest request) throws JwtException {
-        return "admin".equals(tokenSubject);
+    public boolean validateTokenSubject(Claims claims, HttpServletRequest request) throws JwtException {
+        return "admin".equals(claims.getSubject());
     }
 }

@@ -29,9 +29,11 @@ public class JWTUtil {
         .compact();
     }
 
-    public String generateTokenString(String sessionId, Date expiration) {
+    public String generateTokenString(String sessionId, String applicationId, String deviceId, Date expiration) {
         return Jwts.builder()
         .claim("analytics", "allowed")
+        .claim("applicationId", applicationId)
+        .claim("deviceId", deviceId)
         .subject(sessionId)
         .issuedAt(new Date(System.currentTimeMillis()))
         .expiration(expiration)
@@ -40,11 +42,15 @@ public class JWTUtil {
     }
 
     public String validateTokenAndExtractSubject(String token) {
+        return validateTokenAndExtractClaims(token).getSubject();
+    }
+
+    public Claims validateTokenAndExtractClaims(String token) {
         Jws<Claims> jwt = verifyAndParsePayload(token);
         if (jwt.getPayload().getExpiration().before(new Date())) {
             throw new ExpiredJwtException(jwt.getHeader(), jwt.getPayload(), "The token has expired!");
         }
-        return jwt.getPayload().getSubject();
+        return jwt.getPayload();
     }
 
     private Jws<Claims> verifyAndParsePayload(String token) {

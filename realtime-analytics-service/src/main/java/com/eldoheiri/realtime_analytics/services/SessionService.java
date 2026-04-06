@@ -40,14 +40,18 @@ public class SessionService {
             response.setId(sessionId);
             response.setApplicationId(applicationId.toString());
             Date tokenExpiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 3);
-            response.setToken(jwtUtil.generateTokenString(sessionId, tokenExpiration));
+            response.setToken(jwtUtil.generateTokenString(
+                sessionId,
+                applicationId,
+                sessionRequest.getDeviceId(),
+                tokenExpiration
+            ));
             response.setDeviceId(sessionRequest.getDeviceId());
             response.setCreateAt(new Timestamp(System.currentTimeMillis()));
             response.setHeartBeat(sessionRequest.getHeartBeat());
 
             if (sessionRequest.getHeartBeat() != null) {
-                sessionRequest.getHeartBeat().setDeviceId(sessionRequest.getDeviceId());
-                heartBeatService.heartBeatRecieved(sessionRequest.getHeartBeat(), sessionRequest.getDeviceId(), sessionId, applicationId);
+                heartBeatService.heartBeatRecieved(sessionRequest.getHeartBeat(), sessionId, applicationId);
             }
             return response;
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {

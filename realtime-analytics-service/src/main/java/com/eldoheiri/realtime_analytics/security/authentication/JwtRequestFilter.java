@@ -12,6 +12,7 @@ import com.eldoheiri.realtime_analytics.dataobjects.error.ErrorResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -38,14 +39,14 @@ public abstract class JwtRequestFilter extends OncePerRequestFilter {
             }
             String jwt = authorizationHeader.substring(7);
 
-            String subject = jwtUtil.validateTokenAndExtractSubject(jwt);
-            if (subject == null) {
+            Claims claims = jwtUtil.validateTokenAndExtractClaims(jwt);
+            if (claims == null || claims.getSubject() == null) {
                 throw new BadCredentialsException("Invalid Authorization token");
             }
-            if (!validateTokenSubject(subject, request)) {
+            if (!validateTokenSubject(claims, request)) {
                 throw new JwtException("Invalid token");
             }
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(subject, null, List.of());
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(claims, null, List.of());
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             filterChain.doFilter(request, response);
@@ -75,6 +76,6 @@ public abstract class JwtRequestFilter extends OncePerRequestFilter {
         return mapper.writeValueAsString(object);
     }
 
-    abstract public boolean validateTokenSubject(String tokenSubject, HttpServletRequest request) throws JwtException;
+    abstract public boolean validateTokenSubject(Claims claims, HttpServletRequest request) throws JwtException;
     
 }
