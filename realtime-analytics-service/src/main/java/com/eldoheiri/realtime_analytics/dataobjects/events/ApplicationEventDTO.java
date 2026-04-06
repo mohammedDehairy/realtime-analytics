@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class ApplicationEventDTO {
@@ -14,6 +15,7 @@ public class ApplicationEventDTO {
     @NotNull
     private Timestamp timestamp;
 
+    @NotBlank
     private String type;
 
     private Map<String, String> attributes;
@@ -107,4 +109,3 @@ public class ApplicationEventDTO {
     }
     
 }
-

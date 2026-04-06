@@ -36,7 +36,7 @@ public class SessionService {
             }
 
             SessionDTO response = new SessionDTO();
-            String sessionId = identifierUtil.generateId(applicationId);
+            String sessionId = identifierUtil.generateId(sessionRequest.getDeviceId());
             response.setId(sessionId);
             response.setApplicationId(applicationId.toString());
             Date tokenExpiration = new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 3);

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 public final class HeartBeatDTO {
@@ -22,6 +23,8 @@ public final class HeartBeatDTO {
     private Map<String, String> attributes;
 
     @UniqueElements
+    @NotNull
+    @Valid
     private List<ApplicationEventDTO> events;
 
     public String getId() {

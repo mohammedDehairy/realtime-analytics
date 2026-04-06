@@ -16,7 +16,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class APIKeyFilter extends OncePerRequestFilter {
-    private final String expectedApiKey = "api-key";
+    private final String expectedApiKey;
+
+    public APIKeyFilter(String expectedApiKey) {
+        this.expectedApiKey = expectedApiKey;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

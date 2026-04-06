@@ -3,9 +3,11 @@ package com.eldoheiri.realtime_analytics.applicationstartup.configuration;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(name = "druid.bootstrap.enabled", havingValue = "true")
 public class DruidConfigRunner implements CommandLineRunner {
     private final DruidConfigService druidConfigService;
 

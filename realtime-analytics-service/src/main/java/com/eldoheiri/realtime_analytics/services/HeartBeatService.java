@@ -43,7 +43,7 @@ public class HeartBeatService {
             throw new HeartBeatException("Invalid device id");
         }
 
-        if (!identifierUtil.validateIdentifier(applicationId, sessionId)) {
+        if (!identifierUtil.validateIdentifier(deviceId, sessionId)) {
             throw new HeartBeatException("Invalid session id");
         }
 

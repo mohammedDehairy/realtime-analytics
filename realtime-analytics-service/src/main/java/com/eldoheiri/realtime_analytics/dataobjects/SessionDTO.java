@@ -1,5 +1,6 @@
 package com.eldoheiri.realtime_analytics.dataobjects;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 import java.sql.Timestamp;
@@ -18,6 +19,7 @@ public class SessionDTO {
 
     private Timestamp createAt;
 
+    @Valid
     private HeartBeatDTO heartBeat;
 
     public String getId() {

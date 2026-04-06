@@ -1,6 +1,7 @@
 package com.eldoheiri.realtime_analytics.security.authentication;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,10 +18,18 @@ public class SecurityConfig {
     @Autowired
     private JWTUtil jwtUtil;
 
+    @Value("${api.security.api-key}")
+    private String apiKey;
+
+    @Bean
+    APIKeyFilter apiKeyFilter() {
+        return new APIKeyFilter(apiKey);
+    }
+
     @Bean
     SecurityFilterChain apiKeyfilterChain(HttpSecurity http) throws Exception {
-        return http.securityMatcher("/api/v*/{applicationId}/session", "/api/v*/{applicationId}/device")
-        .addFilterBefore(new APIKeyFilter(), UsernamePasswordAuthenticationFilter.class)
+        return http.securityMatcher("/api/v*/{applicationId}/sessions", "/api/v*/{applicationId}/devices")
+        .addFilterBefore(apiKeyFilter(), UsernamePasswordAuthenticationFilter.class)
         .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .build();
@@ -28,7 +37,7 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain sessionJwtFilterChain(HttpSecurity http) throws Exception {
-        return http.securityMatcher("/api/v*/{applicationId}/session/{sessionId}/heartBeat")
+        return http.securityMatcher("/api/v*/{applicationId}/sessions/{sessionId}/heartBeats")
         .addFilterBefore(new SessionJwtRequestFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
         .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
