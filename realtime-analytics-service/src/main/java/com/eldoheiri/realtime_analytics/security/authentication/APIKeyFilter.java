@@ -1,6 +1,7 @@
 package com.eldoheiri.realtime_analytics.security.authentication;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,17 +17,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class APIKeyFilter extends OncePerRequestFilter {
-    private final String expectedApiKey;
+    private final Map<String, String> applicationKeys;
 
-    public APIKeyFilter(String expectedApiKey) {
-        this.expectedApiKey = expectedApiKey;
+    public APIKeyFilter(Map<String, String> applicationKeys) {
+        this.applicationKeys = applicationKeys;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String apiKey = request.getHeader("x-api-key");
-        if (!request.getRequestURI().endsWith("/session") && !request.getRequestURI().endsWith("/device")) {
+        String applicationId = resolveApplicationId(request);
+        if (applicationId == null) {
             ErrorResponse errorResponse = new ErrorResponse();
             errorResponse.setMessage("Invalid API path");
             errorResponse.setCode(404);
@@ -34,7 +36,8 @@ public class APIKeyFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (!expectedApiKey.equals(apiKey)) {
+        String expectedApiKey = applicationKeys.get(applicationId);
+        if (expectedApiKey == null || !expectedApiKey.equals(apiKey)) {
             ErrorResponse errorResponse = new ErrorResponse();
             errorResponse.setMessage("Invalid API key");
             errorResponse.setCode(401);
@@ -45,9 +48,19 @@ public class APIKeyFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    private String resolveApplicationId(HttpServletRequest request) {
+        String[] pathComponents = request.getRequestURI().split("/");
+        if (pathComponents.length < 5) {
+            return null;
+        }
+
+        return pathComponents[4];
+    }
+
     private void sendError(ErrorResponse errorResponse, HttpServletResponse response) throws IOException {
         try {
-            response.setStatus(401);
+            response.setStatus(errorResponse.getCode());
+            response.setContentType("application/json");
             response.getWriter().write(convertyObjectToJson(errorResponse));
         } catch (Exception exception) {
             exception.printStackTrace();

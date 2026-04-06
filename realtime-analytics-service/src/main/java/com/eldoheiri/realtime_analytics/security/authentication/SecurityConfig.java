@@ -1,7 +1,6 @@
 package com.eldoheiri.realtime_analytics.security.authentication;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,12 +17,12 @@ public class SecurityConfig {
     @Autowired
     private JWTUtil jwtUtil;
 
-    @Value("${api.security.api-key}")
-    private String apiKey;
+    @Autowired
+    private ApiSecurityProperties apiSecurityProperties;
 
     @Bean
     APIKeyFilter apiKeyFilter() {
-        return new APIKeyFilter(apiKey);
+        return new APIKeyFilter(apiSecurityProperties.getApplicationKeys());
     }
 
     @Bean
