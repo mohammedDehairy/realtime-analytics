@@ -9,15 +9,13 @@ import com.eldoheiri.realtime_analytics.exceptionhandling.Exceptions.heartbeat.H
 import com.eldoheiri.realtime_analytics.exceptionhandling.Exceptions.messagequeue.MessageQueueException;
 import com.eldoheiri.realtime_analytics.kafka.producer.MessageQueue;
 import com.eldoheiri.realtime_analytics.security.idgeneration.IdentifierUtil;
-import com.eldoheiri.messaging.messages.HeartBeatMessage;
-import com.eldoheiri.messaging.dataobjects.Application;
-import com.eldoheiri.messaging.dataobjects.ApplicationEvent;
+import com.eldoheiri.realtime_analytics.dataobjects.Application;
 
 import io.jsonwebtoken.Claims;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HeartBeatService {
 
@@ -25,14 +23,13 @@ public class HeartBeatService {
     private IdentifierUtil identifierUtil;
 
     @Autowired
-    private MessageQueue<HeartBeatMessage> heartBeatMessageQueue;
+    private MessageQueue<Map<String, Object>> heartBeatMessageQueue;
 
-    public void send(HeartBeatMessage message) throws HeartBeatException {
+    public void send(Map<String, Object> message) {
         try {
             heartBeatMessageQueue.send(message);
         } catch (MessageQueueException e) {
             e.printStackTrace();
-            throw new HeartBeatException(e);
         }
     }
 
@@ -72,19 +69,17 @@ public class HeartBeatService {
             throw new HeartBeatException("Invalid session id");
         }
 
-        List<ApplicationEvent> applicationEvents = new ArrayList<>();
         for (ApplicationEventDTO eventDTO : sessionHeartBeat.getEvents()) {
-            ApplicationEvent applicationEvent = new ApplicationEvent();
-            applicationEvent.setTimestamp(eventDTO.getTimestamp().getTime());
-            applicationEvent.setType(eventDTO.getType());
-            applicationEvent.setAttributes(eventDTO.getAttributes());
-            applicationEvents.add(applicationEvent);
+            Map<String, Object> eventMessage = new HashMap<>();
+            eventMessage.put("timestamp", eventDTO.getTimestamp().getTime());
+            eventMessage.put("sessionId", sessionId);
+            eventMessage.put("applicationId", applicationId);
+            eventMessage.put("deviceId", deviceId);
+            eventMessage.put("eventType", eventDTO.getType());
+            if (eventDTO.getAttributes() != null) {
+                eventMessage.putAll(eventDTO.getAttributes());
+            }
+            send(eventMessage);
         }
-        HeartBeatMessage heartBeatMessage = new HeartBeatMessage();
-        heartBeatMessage.setSessionId(sessionId);
-        heartBeatMessage.setApplicationId(applicationId);
-        heartBeatMessage.setDeviceId(deviceId);
-        heartBeatMessage.setEvents(applicationEvents);
-        send(heartBeatMessage);
     }
 }

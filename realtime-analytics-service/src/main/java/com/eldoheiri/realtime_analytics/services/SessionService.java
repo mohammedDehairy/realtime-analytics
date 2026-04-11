@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.eldoheiri.realtime_analytics.dataobjects.SessionDTO;
 import com.eldoheiri.realtime_analytics.exceptionhandling.Exceptions.heartbeat.HeartBeatException;
 import com.eldoheiri.realtime_analytics.exceptionhandling.Exceptions.session.SessionException;
-import com.eldoheiri.messaging.dataobjects.Application;
+import com.eldoheiri.realtime_analytics.dataobjects.Application;
 import com.eldoheiri.realtime_analytics.security.authentication.JWTUtil;
 import com.eldoheiri.realtime_analytics.security.idgeneration.IdentifierUtil;
 

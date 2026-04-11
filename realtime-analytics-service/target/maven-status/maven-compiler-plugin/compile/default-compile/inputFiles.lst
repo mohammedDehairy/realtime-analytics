@@ -1,4 +1,5 @@
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/kafka/producer/MessageQueue.java
+/Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/dataobjects/Application.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/dataobjects/validators/EnumValidator.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/dataobjects/AcknowledgeResponse.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/security/ratelimiting/RateLimitRequetFilter.java

@@ -121,6 +121,21 @@ services:
     env_file:
       - environment
 
+  druid-bootstrap:
+    image: curlimages/curl:8.12.1
+    container_name: druid-bootstrap
+    depends_on:
+      - router
+      - kafka
+    volumes:
+      - ./realtime-analytics-service/src/main/resources/kafka_supervisor_spec.json:/bootstrap/kafka_supervisor_spec.json:ro
+      - ./realtime-analytics-service/src/main/resources/realtime_analytics_data.json:/bootstrap/realtime_analytics_data.json:ro
+      - ./druid-bootstrap.sh:/bootstrap/druid-bootstrap.sh:ro
+    environment:
+      DRUID_ROUTER_URL: "http://router:8888"
+      DATASOURCE_NAME: "realtime_analytics_data"
+    entrypoint: ["sh", "/bootstrap/druid-bootstrap.sh"]
+
   realtime-analytics-service:
     build: 
       context: ./realtime-analytics-service
@@ -140,12 +155,13 @@ services:
       # DB_PASSWORD: postgres
       API_SECURITY_APPLICATION_KEY_IMOTION: "nRQOlI5jF7wHc7xF2awR3RO1fMq5OiqEnGvMxvrX3pk"
       DRUID_ROUTER_URL: "http://router:8888"
+      DRUID_BOOTSTRAP_ENABLED: "false"
       DATASOURCE_NAME: "realtime_analytics_data"
       KAFKA_TOPIC: "realtime-analytics"
       DEVICE_ID_SECRET_KEY: "C8aFATutI3gRoZxcXfOsE4hkku44jbwLKGv6gxyJAcs="
       JWT_SECRET_KEY: "kYlOjhxk2N61i+/Qxrh92ImjVdZOcMfmZKghdmWNLRo="
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
 
 volumes:
   metadata_data: {}

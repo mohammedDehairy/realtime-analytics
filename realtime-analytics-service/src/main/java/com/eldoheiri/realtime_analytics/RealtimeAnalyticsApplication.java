@@ -1,6 +1,7 @@
 package com.eldoheiri.realtime_analytics;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -9,7 +10,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 import com.eldoheiri.realtime_analytics.kafka.producer.MessageQueue;
-import com.eldoheiri.messaging.messages.HeartBeatMessage;
 import com.eldoheiri.realtime_analytics.security.authentication.JWTUtil;
 import com.eldoheiri.realtime_analytics.security.idgeneration.IdentifierUtil;
 import com.eldoheiri.realtime_analytics.services.DeviceService;
@@ -34,8 +34,8 @@ public class RealtimeAnalyticsApplication {
 	}
 
     @Bean
-    MessageQueue<HeartBeatMessage> heartBeatMessageQueue() {
-		return new MessageQueue<HeartBeatMessage>(System.getenv("KAFKA_TOPIC"));
+    MessageQueue<Map<String, Object>> heartBeatMessageQueue() {
+		return new MessageQueue<Map<String, Object>>(System.getenv("KAFKA_TOPIC"));
 	}
 
     @Bean
