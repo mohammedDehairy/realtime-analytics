@@ -16,7 +16,7 @@ public class SessionJwtRequestFilter extends JwtRequestFilter {
         if (pathComponents.length < 6) {
             throw new JwtException("Invalid request path");
         }
-        String applicationId = pathComponents[4];
+        String applicationId = pathComponents[3];
         String sessionId = pathComponents[pathComponents.length - 2];
         return sessionId.equals(claims.getSubject())
             && applicationId.equals(claims.get("applicationId", String.class));

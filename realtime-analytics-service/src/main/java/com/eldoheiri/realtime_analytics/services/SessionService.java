@@ -51,7 +51,12 @@ public class SessionService {
             response.setHeartBeat(sessionRequest.getHeartBeat());
 
             if (sessionRequest.getHeartBeat() != null) {
-                heartBeatService.heartBeatRecieved(sessionRequest.getHeartBeat(), sessionId, applicationId);
+                heartBeatService.processInitialHeartbeat(
+                    sessionRequest.getHeartBeat(),
+                    sessionId,
+                    applicationId,
+                    sessionRequest.getDeviceId()
+                );
             }
             return response;
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {

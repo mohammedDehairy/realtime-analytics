@@ -2,6 +2,7 @@ com/eldoheiri/realtime_analytics/security/idgeneration/IdentifierUtil.class
 com/eldoheiri/realtime_analytics/dataobjects/events/ApplicationEventDTO.class
 com/eldoheiri/realtime_analytics/apiresources/SessionResource.class
 com/eldoheiri/realtime_analytics/exceptionhandling/Exceptions/DeviceException.class
+com/eldoheiri/realtime_analytics/applicationstartup/configuration/DruidConfigRunner.class
 com/eldoheiri/realtime_analytics/dataobjects/AcknowledgeResponse.class
 com/eldoheiri/realtime_analytics/exceptionhandling/ServerExceptionController.class
 com/eldoheiri/realtime_analytics/security/authentication/APIKeyFilter.class
@@ -30,4 +31,5 @@ com/eldoheiri/realtime_analytics/security/ratelimiting/RateLimiter.class
 com/eldoheiri/realtime_analytics/services/SessionService.class
 com/eldoheiri/realtime_analytics/security/authentication/JwtRequestFilter.class
 com/eldoheiri/realtime_analytics/security/ratelimiting/TokenBucketRateLimiter.class
+com/eldoheiri/realtime_analytics/applicationstartup/configuration/DruidConfigService.class
 com/eldoheiri/realtime_analytics/dataobjects/DeviceDTO.class

@@ -1,8 +1,8 @@
 package com.eldoheiri.realtime_analytics.security.authentication;
 
 import java.io.IOException;
-import java.util.Map;
 
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -17,10 +17,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class APIKeyFilter extends OncePerRequestFilter {
-    private final Map<String, String> applicationKeys;
+    private final Environment environment;
 
-    public APIKeyFilter(Map<String, String> applicationKeys) {
-        this.applicationKeys = applicationKeys;
+    public APIKeyFilter(Environment environment) {
+        this.environment = environment;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class APIKeyFilter extends OncePerRequestFilter {
             return;
         }
 
-        String expectedApiKey = applicationKeys.get(applicationId);
+        String expectedApiKey = environment.getProperty("api.security.application-keys." + applicationId);
         if (expectedApiKey == null || !expectedApiKey.equals(apiKey)) {
             ErrorResponse errorResponse = new ErrorResponse();
             errorResponse.setMessage("Invalid API key");
@@ -54,7 +54,7 @@ public class APIKeyFilter extends OncePerRequestFilter {
             return null;
         }
 
-        return pathComponents[4];
+        return pathComponents[3];
     }
 
     private void sendError(ErrorResponse errorResponse, HttpServletResponse response) throws IOException {

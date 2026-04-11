@@ -13,7 +13,6 @@
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/exceptionhandling/Exceptions/messagequeue/MessageQueueException.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/apiresources/DeviceResource.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/exceptionhandling/Exceptions/DeviceException.java
-/Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/security/authentication/ApiSecurityProperties.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/services/SessionService.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/security/authentication/SecurityConfig.java
 /Users/meldehairy/Documents/Code/Java/realtime-analytics/realtime-analytics-service/src/main/java/com/eldoheiri/realtime_analytics/security/authentication/APIKeyFilter.java

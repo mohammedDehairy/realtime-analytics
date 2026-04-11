@@ -131,18 +131,21 @@ services:
       - router
     ports:
       - "8090:8090"
+      - "5005:5005"
     environment:
       # DB_HOST: localhost
       # DB_PORT: 5432
       # DB_NAME: postgres
       # DB_USER: postgres
       # DB_PASSWORD: postgres
+      API_SECURITY_APPLICATION_KEY_IMOTION: "nRQOlI5jF7wHc7xF2awR3RO1fMq5OiqEnGvMxvrX3pk"
       DRUID_ROUTER_URL: "http://router:8888"
       DATASOURCE_NAME: "realtime_analytics_data"
       KAFKA_TOPIC: "realtime-analytics"
       DEVICE_ID_SECRET_KEY: "C8aFATutI3gRoZxcXfOsE4hkku44jbwLKGv6gxyJAcs="
       JWT_SECRET_KEY: "kYlOjhxk2N61i+/Qxrh92ImjVdZOcMfmZKghdmWNLRo="
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
 
 volumes:
   metadata_data: {}

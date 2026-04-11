@@ -36,29 +36,39 @@ public class HeartBeatService {
         }
     }
 
-    public void heartBeatRecieved(HeartBeatDTO sessionHeartBeat, String sessionId, String applicationId) throws HeartBeatException, InvalidKeyException, NoSuchAlgorithmException {
+    public void processAuthenticatedHeartbeat(HeartBeatDTO sessionHeartBeat, String pathSessionId, String pathApplicationId)
+            throws HeartBeatException, InvalidKeyException, NoSuchAlgorithmException {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!(principal instanceof Claims claims)) {
             throw new HeartBeatException("Missing authenticated session claims");
         }
 
-        String authenticatedSessionId = claims.getSubject();
-        String authenticatedApplicationId = claims.get("applicationId", String.class);
-        String authenticatedDeviceId = claims.get("deviceId", String.class);
+        String sessionId = claims.getSubject();
+        String applicationId = claims.get("applicationId", String.class);
+        String deviceId = claims.get("deviceId", String.class);
 
-        if (!sessionId.equals(authenticatedSessionId) || !applicationId.equals(authenticatedApplicationId)) {
+        if (!pathSessionId.equals(sessionId) || !pathApplicationId.equals(applicationId)) {
             throw new HeartBeatException("Token does not match request path");
         }
 
+        processTrustedHeartbeat(sessionHeartBeat, sessionId, applicationId, deviceId);
+    }
+
+    public void processInitialHeartbeat(HeartBeatDTO sessionHeartBeat, String sessionId, String applicationId, String deviceId)
+            throws HeartBeatException, InvalidKeyException, NoSuchAlgorithmException {
+        processTrustedHeartbeat(sessionHeartBeat, sessionId, applicationId, deviceId);
+    }
+
+    private void processTrustedHeartbeat(HeartBeatDTO sessionHeartBeat, String sessionId, String applicationId, String deviceId) throws HeartBeatException, InvalidKeyException, NoSuchAlgorithmException {
         if (Application.fromId(applicationId) == null) {
             throw new HeartBeatException("Application not found");
         }
 
-        if (!identifierUtil.validateIdentifier(applicationId, authenticatedDeviceId)) {
+        if (!identifierUtil.validateIdentifier(applicationId, deviceId)) {
             throw new HeartBeatException("Invalid device id");
         }
 
-        if (!identifierUtil.validateIdentifier(authenticatedDeviceId, authenticatedSessionId)) {
+        if (!identifierUtil.validateIdentifier(deviceId, sessionId)) {
             throw new HeartBeatException("Invalid session id");
         }
 
@@ -71,9 +81,9 @@ public class HeartBeatService {
             applicationEvents.add(applicationEvent);
         }
         HeartBeatMessage heartBeatMessage = new HeartBeatMessage();
-        heartBeatMessage.setSessionId(authenticatedSessionId);
-        heartBeatMessage.setApplicationId(authenticatedApplicationId);
-        heartBeatMessage.setDeviceId(authenticatedDeviceId);
+        heartBeatMessage.setSessionId(sessionId);
+        heartBeatMessage.setApplicationId(applicationId);
+        heartBeatMessage.setDeviceId(deviceId);
         heartBeatMessage.setEvents(applicationEvents);
         send(heartBeatMessage);
     }

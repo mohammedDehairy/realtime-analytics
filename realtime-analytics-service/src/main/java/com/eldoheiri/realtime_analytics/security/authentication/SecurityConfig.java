@@ -1,6 +1,7 @@
 package com.eldoheiri.realtime_analytics.security.authentication;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,17 +19,12 @@ public class SecurityConfig {
     private JWTUtil jwtUtil;
 
     @Autowired
-    private ApiSecurityProperties apiSecurityProperties;
-
-    @Bean
-    APIKeyFilter apiKeyFilter() {
-        return new APIKeyFilter(apiSecurityProperties.getApplicationKeys());
-    }
+    private Environment environment;
 
     @Bean
     SecurityFilterChain apiKeyfilterChain(HttpSecurity http) throws Exception {
         return http.securityMatcher("/api/v*/{applicationId}/sessions", "/api/v*/{applicationId}/devices")
-        .addFilterBefore(apiKeyFilter(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(new APIKeyFilter(environment), UsernamePasswordAuthenticationFilter.class)
         .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .build();
