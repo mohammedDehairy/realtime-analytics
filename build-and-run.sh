@@ -35,7 +35,6 @@ log_step "Stopping existing Docker Compose stack"
   docker compose down --remove-orphans
 )
 
-run_maven_module "datastore"
 run_maven_module "realtime-analytics-service"
 
 log_step "Rebuilding Docker images"
