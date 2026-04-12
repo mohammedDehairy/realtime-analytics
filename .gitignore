@@ -5,6 +5,8 @@
 # IDE's
 .vscode/*
 .idea/*
+.env
+.env.local
 
 # Log file
 *.log
