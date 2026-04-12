@@ -53,6 +53,11 @@ services:
       - coordinator
     env_file:
       - environment
+    environment:
+      - druid_metadata_storage_connector_password=${POSTGRES_PASSWORD}
+      - druid_auth_authenticator_basic_initialAdminPassword=${DRUID_ADMIN_PASSWORD}
+      - druid_auth_authenticator_basic_initialInternalClientPassword=${DRUID_INTERNAL_PASSWORD}
+      - druid_escalator_internalClientPassword=${DRUID_INTERNAL_PASSWORD}
 
   broker:
     image: apache/druid:34.0.0
@@ -69,6 +74,11 @@ services:
       - broker
     env_file:
       - environment
+    environment:
+      - druid_metadata_storage_connector_password=${POSTGRES_PASSWORD}
+      - druid_auth_authenticator_basic_initialAdminPassword=${DRUID_ADMIN_PASSWORD}
+      - druid_auth_authenticator_basic_initialInternalClientPassword=${DRUID_INTERNAL_PASSWORD}
+      - druid_escalator_internalClientPassword=${DRUID_INTERNAL_PASSWORD}
 
   historical:
     image: apache/druid:34.0.0
@@ -86,6 +96,11 @@ services:
       - historical
     env_file:
       - environment
+    environment:
+      - druid_metadata_storage_connector_password=${POSTGRES_PASSWORD}
+      - druid_auth_authenticator_basic_initialAdminPassword=${DRUID_ADMIN_PASSWORD}
+      - druid_auth_authenticator_basic_initialInternalClientPassword=${DRUID_INTERNAL_PASSWORD}
+      - druid_escalator_internalClientPassword=${DRUID_INTERNAL_PASSWORD}
 
   middlemanager:
     image: apache/druid:34.0.0
@@ -104,6 +119,11 @@ services:
       - middleManager
     env_file:
       - environment
+    environment:
+      - druid_metadata_storage_connector_password=${POSTGRES_PASSWORD}
+      - druid_auth_authenticator_basic_initialAdminPassword=${DRUID_ADMIN_PASSWORD}
+      - druid_auth_authenticator_basic_initialInternalClientPassword=${DRUID_INTERNAL_PASSWORD}
+      - druid_escalator_internalClientPassword=${DRUID_INTERNAL_PASSWORD}
 
   router:
     image: apache/druid:34.0.0
@@ -120,6 +140,11 @@ services:
       - router
     env_file:
       - environment
+    environment:
+      - druid_metadata_storage_connector_password=${POSTGRES_PASSWORD}
+      - druid_auth_authenticator_basic_initialAdminPassword=${DRUID_ADMIN_PASSWORD}
+      - druid_auth_authenticator_basic_initialInternalClientPassword=${DRUID_INTERNAL_PASSWORD}
+      - druid_escalator_internalClientPassword=${DRUID_INTERNAL_PASSWORD}
 
   druid-bootstrap:
     image: curlimages/curl:8.12.1
@@ -134,6 +159,7 @@ services:
     environment:
       DRUID_ROUTER_URL: "http://router:8888"
       DATASOURCE_NAME: "realtime_analytics_data"
+      DRUID_ADMIN_PASSWORD: ${DRUID_ADMIN_PASSWORD}
     entrypoint: ["sh", "/bootstrap/druid-bootstrap.sh"]
 
   realtime-analytics-service:
@@ -148,11 +174,6 @@ services:
       - "8090:8090"
       - "5005:5005"
     environment:
-      # DB_HOST: localhost
-      # DB_PORT: 5432
-      # DB_NAME: postgres
-      # DB_USER: postgres
-      # DB_PASSWORD: postgres
       API_SECURITY_APPLICATION_KEY_IMOTION: ${API_SECURITY_APPLICATION_KEY_IMOTION}
       DRUID_ROUTER_URL: "http://router:8888"
       DRUID_BOOTSTRAP_ENABLED: "false"
@@ -161,6 +182,7 @@ services:
       DEVICE_ID_SECRET_KEY: ${DEVICE_ID_SECRET_KEY}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      DRUID_ADMIN_PASSWORD: ${DRUID_ADMIN_PASSWORD}
       JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
 
 volumes:
