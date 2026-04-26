@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  realtime-analytics-service:
+    build:
+      context: ./realtime-analytics-service
+      dockerfile: Dockerfile
+    container_name: realtime-analytics-service
+    ports:
+      - "8090:8090"
+      - "5005:5005"
+    environment:
+      API_SECURITY_APPLICATION_KEY_IMOTION: ${API_SECURITY_APPLICATION_KEY_IMOTION}
+      DEVICE_ID_SECRET_KEY: ${DEVICE_ID_SECRET_KEY}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      DRUID_BOOTSTRAP_ENABLED: "false"
+      EVENT_PUBLISHER_BACKEND: "tinybird"
+      TINYBIRD_EVENTS_URL: ${TINYBIRD_EVENTS_URL}
+      TINYBIRD_TOKEN: ${TINYBIRD_TOKEN}
+      TINYBIRD_DATASOURCE: ${TINYBIRD_DATASOURCE:-realtime_events}
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"

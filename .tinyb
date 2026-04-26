@@ -1,0 +1,15 @@
+{
+    "host": "https://api.us-east.tinybird.co",
+    "id": "2ffaee6b-a0ac-4ab1-b22c-a57ff7944930",
+    "name": "realtime_analytics",
+    "scope": "user",
+    "token": "p.eyJ1IjogIjJmZmFlZTZiLWEwYWMtNGFiMS1iMjJjLWE1N2ZmNzk0NDkzMCIsICJpZCI6ICI5NzNhNWNjMS05NDU5LTRiMWYtYmI2Ny0yNmIzODNjN2EzZGMiLCAiaG9zdCI6ICJ1c19lYXN0In0.Ne8SwwWvGdz6N8BAUwmsCHKppKylAQFOiFac56XYwZ8",
+    "tokens": {
+        "https://api.us-east.tinybird.co": "p.eyJ1IjogIjJmZmFlZTZiLWEwYWMtNGFiMS1iMjJjLWE1N2ZmNzk0NDkzMCIsICJpZCI6ICI5NzNhNWNjMS05NDU5LTRiMWYtYmI2Ny0yNmIzODNjN2EzZGMiLCAiaG9zdCI6ICJ1c19lYXN0In0.Ne8SwwWvGdz6N8BAUwmsCHKppKylAQFOiFac56XYwZ8"
+    },
+    "cwd": "./tinybird",
+    "user_email": "mohamed.eldoheiri@gmail.com",
+    "user_id": "c87456d5-9b97-442e-86ae-824728b169a3",
+    "user_token": "p.eyJ1IjogImM4NzQ1NmQ1LTliOTctNDQyZS04NmFlLTgyNDcyOGIxNjlhMyIsICJpZCI6ICJlMzVlYjQzOS0yMDUwLTRmODctOWE5ZS02ZTJlOGJjMDc3YTkiLCAiaG9zdCI6ICJ1c19lYXN0In0.RPbf9qQ2RdOiVVkf8zMicaoooLtzZptlkPlBx828PII",
+    "version": "4.5.1"
+}

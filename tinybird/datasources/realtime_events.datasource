@@ -1,0 +1,19 @@
+# datasources/realtime_events.datasource
+SCHEMA >
+    `timestamp` DateTime `json:$.timestamp`,
+    `application_id` String `json:$.application_id`,
+    `application_version` String `json:$.application_version`,
+    `release_channel` String `json:$.release_channel`,
+    `session_id` String `json:$.session_id`,
+    `device_id` String `json:$.device_id`,
+    `event_type` String `json:$.event_type`,
+    `platform` String `json:$.platform`,
+    `os_version` String `json:$.os_version`,
+    `device_model` String `json:$.device_model`,
+    `device_brand` String `json:$.device_brand`,
+    `device_locale` String `json:$.device_locale`,
+    `additional_attributes` Map(String, String) `json:$.additional_attributes`
+
+ENGINE "MergeTree"
+ENGINE_SORTING_KEY "application_id, timestamp"
+TOKEN realtime-analytics-app APPEND

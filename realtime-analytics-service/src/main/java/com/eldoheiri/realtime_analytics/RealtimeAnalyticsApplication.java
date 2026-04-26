@@ -9,9 +9,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import com.eldoheiri.realtime_analytics.messaging.AnalyticsEventPublisher;
 import com.eldoheiri.realtime_analytics.kafka.producer.MessageQueue;
 import com.eldoheiri.realtime_analytics.security.authentication.JWTUtil;
 import com.eldoheiri.realtime_analytics.security.idgeneration.IdentifierUtil;
+import com.eldoheiri.realtime_analytics.tinybird.producer.TinybirdMessageQueue;
 import com.eldoheiri.realtime_analytics.services.DeviceService;
 import com.eldoheiri.realtime_analytics.services.HeartBeatService;
 import com.eldoheiri.realtime_analytics.services.SessionService;
@@ -34,9 +36,17 @@ public class RealtimeAnalyticsApplication {
 	}
 
     @Bean
-    MessageQueue<Map<String, Object>> heartBeatMessageQueue() {
-		return new MessageQueue<Map<String, Object>>(System.getenv("KAFKA_TOPIC"));
-	}
+    AnalyticsEventPublisher<Map<String, Object>> heartBeatMessageQueue() {
+		String backend = System.getenv().getOrDefault("EVENT_PUBLISHER_BACKEND", "kafka");
+		if ("tinybird".equalsIgnoreCase(backend)) {
+			return new TinybirdMessageQueue<>(
+				System.getenv("TINYBIRD_EVENTS_URL"),
+				System.getenv("TINYBIRD_TOKEN"),
+				System.getenv().getOrDefault("TINYBIRD_DATASOURCE", "realtime_events")
+			);
+		}
+		return new MessageQueue<>(System.getenv().getOrDefault("KAFKA_TOPIC", "realtime-events"));
+    }
 
     @Bean
     SessionService sessionService() {

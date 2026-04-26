@@ -1,0 +1,11 @@
+# pipes/events_per_minute.pipe
+  NODE agg
+  SQL >
+      SELECT
+          toStartOfMinute(timestamp) AS minute,
+          application_id,
+          event_type,
+          count() AS events
+      FROM realtime_events
+      GROUP BY minute, application_id, event_type
+      ORDER BY minute DESC

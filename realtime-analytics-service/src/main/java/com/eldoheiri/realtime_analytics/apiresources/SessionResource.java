@@ -3,6 +3,7 @@ package com.eldoheiri.realtime_analytics.apiresources;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+import com.eldoheiri.realtime_analytics.exceptionhandling.Exceptions.messagequeue.MessageQueueException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,7 +39,7 @@ public class SessionResource {
     public AcknowledgeResponse heartBeat(@Valid @RequestBody HeartBeatDTO sessionHeartBeat, @PathVariable String sessionId, @PathVariable String applicationId) {
         try {
             heartBeatService.processAuthenticatedHeartbeat(sessionHeartBeat, sessionId, applicationId);
-        } catch (InvalidKeyException | NoSuchAlgorithmException e) {
+        } catch (InvalidKeyException | NoSuchAlgorithmException | MessageQueueException e) {
             e.printStackTrace();
             throw new HeartBeatException("Failed to validate device id", e);
         } catch (HeartBeatException e) {

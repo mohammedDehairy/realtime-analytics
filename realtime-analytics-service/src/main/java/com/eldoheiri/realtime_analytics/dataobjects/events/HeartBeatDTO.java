@@ -8,8 +8,12 @@ import java.util.ArrayList;
 import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.eldoheiri.realtime_analytics.dataobjects.validators.IsoLocale;
+
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 public final class HeartBeatDTO {
     private String id;
@@ -18,7 +22,28 @@ public final class HeartBeatDTO {
     @NotNull
     private Timestamp timestamp;
 
-    private Map<String, String> attributes;
+    @NotBlank
+    private String applicationVersion;
+
+    @NotNull
+    private String releaseChannel;
+
+    @NotBlank
+    @Pattern(regexp = "(?i)^(ios|android|web)$")
+    private String platform;
+
+    @NotBlank
+    private String osVersion;
+
+    @NotBlank
+    private String deviceModel;
+
+    @NotBlank
+    private String deviceBrand;
+
+    @NotNull
+    @IsoLocale
+    private String deviceLocale;
 
     @UniqueElements
     @NotNull
@@ -41,6 +66,62 @@ public final class HeartBeatDTO {
         this.timestamp = timestamp;
     }
 
+    public String getApplicationVersion() {
+        return this.applicationVersion;
+    }
+
+    public void setApplicationVersion(String applicationVersion) {
+        this.applicationVersion = applicationVersion;
+    }
+
+    public String getReleaseChannel() {
+        return this.releaseChannel;
+    }
+
+    public void setReleaseChannel(String releaseChannel) {
+        this.releaseChannel = releaseChannel;
+    }
+
+    public String getPlatform() {
+        return this.platform;
+    }
+
+    public void setPlatform(String platform) {
+        this.platform = platform;
+    }
+
+    public String getOsVersion() {
+        return this.osVersion;
+    }
+
+    public void setOsVersion(String osVersion) {
+        this.osVersion = osVersion;
+    }
+
+    public String getDeviceModel() {
+        return this.deviceModel;
+    }
+
+    public void setDeviceModel(String deviceModel) {
+        this.deviceModel = deviceModel;
+    }
+
+    public String getDeviceBrand() {
+        return this.deviceBrand;
+    }
+
+    public void setDeviceBrand(String deviceBrand) {
+        this.deviceBrand = deviceBrand;
+    }
+
+    public String getDeviceLocale() {
+        return this.deviceLocale;
+    }
+
+    public void setDeviceLocale(String deviceLocale) {
+        this.deviceLocale = deviceLocale;
+    }
+
 
     public List<ApplicationEventDTO> getEvents() {
         if (this.events == null) {
@@ -53,21 +134,19 @@ public final class HeartBeatDTO {
         this.events = events;
     }
 
-    public Map<String, String> getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(Map<String, String> attributes) {
-        this.attributes = attributes;
-    } 
-
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
-        result = prime * result + ((attributes == null) ? 0 : attributes.hashCode());
+        result = prime * result + ((applicationVersion == null) ? 0 : applicationVersion.hashCode());
+        result = prime * result + ((releaseChannel == null) ? 0 : releaseChannel.hashCode());
+        result = prime * result + ((platform == null) ? 0 : platform.hashCode());
+        result = prime * result + ((osVersion == null) ? 0 : osVersion.hashCode());
+        result = prime * result + ((deviceModel == null) ? 0 : deviceModel.hashCode());
+        result = prime * result + ((deviceBrand == null) ? 0 : deviceBrand.hashCode());
+        result = prime * result + ((deviceLocale == null) ? 0 : deviceLocale.hashCode());
         result = prime * result + ((events == null) ? 0 : events.hashCode());
         return result;
     }
@@ -78,6 +157,13 @@ public final class HeartBeatDTO {
         return "{" +
             " id='" + getId() + "'" +
             ", timestamp='" + getTimestamp() + "'" +
+            ", applicationVersion='" + getApplicationVersion() + "'" +
+            ", releaseChannel='" + getReleaseChannel() + "'" +
+            ", platform='" + getPlatform() + "'" +
+            ", osVersion='" + getOsVersion() + "'" +
+            ", deviceModel='" + getDeviceModel() + "'" +
+            ", deviceBrand='" + getDeviceBrand() + "'" +
+            ", deviceLocale='" + getDeviceLocale() + "'" +
             ", events='" + getEvents() + "'" +
             "}";
     }
@@ -101,10 +187,40 @@ public final class HeartBeatDTO {
                 return false;
         } else if (!timestamp.equals(other.timestamp))
             return false;
-        if (attributes == null) {
-            if (other.attributes != null)
+        if (applicationVersion == null) {
+            if (other.applicationVersion != null)
                 return false;
-        } else if (!attributes.equals(other.attributes))
+        } else if (!applicationVersion.equals(other.applicationVersion))
+            return false;
+        if (releaseChannel == null) {
+            if (other.releaseChannel != null)
+                return false;
+        } else if (!releaseChannel.equals(other.releaseChannel))
+            return false;
+        if (platform == null) {
+            if (other.platform != null)
+                return false;
+        } else if (!platform.equals(other.platform))
+            return false;
+        if (osVersion == null) {
+            if (other.osVersion != null)
+                return false;
+        } else if (!osVersion.equals(other.osVersion))
+            return false;
+        if (deviceModel == null) {
+            if (other.deviceModel != null)
+                return false;
+        } else if (!deviceModel.equals(other.deviceModel))
+            return false;
+        if (deviceBrand == null) {
+            if (other.deviceBrand != null)
+                return false;
+        } else if (!deviceBrand.equals(other.deviceBrand))
+            return false;
+        if (deviceLocale == null) {
+            if (other.deviceLocale != null)
+                return false;
+        } else if (!deviceLocale.equals(other.deviceLocale))
             return false;
         if (events == null) {
             if (other.events != null)
