@@ -1,12 +1,13 @@
 version: '3.8'
 services:
   realtime-analytics-service:
+    image: ${IMAGE_REF:-realtime-analytics-service:local}
     build:
       context: ./realtime-analytics-service
       dockerfile: Dockerfile
     container_name: realtime-analytics-service
     ports:
-      - "8090:8090"
+      - "8080:8080"
       - "5005:5005"
     environment:
       API_SECURITY_APPLICATION_KEY_IMOTION: ${API_SECURITY_APPLICATION_KEY_IMOTION}
