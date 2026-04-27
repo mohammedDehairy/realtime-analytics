@@ -3,7 +3,7 @@
 set -Eeuo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEFAULT_ENV_FILE="${ROOT_DIR}/.env"
+DEFAULT_ENV_FILE="${ROOT_DIR}/.env.staging"
 
 if [[ $# -lt 1 ]]; then
   echo "Usage: $0 [up|down|push] [--env-file <path>] [--image-ref <image-ref>]" >&2

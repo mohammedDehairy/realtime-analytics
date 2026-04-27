@@ -5,7 +5,8 @@ target/
 # IDE's
 .vscode/*
 .idea/*
-.env
+.env.production
+.env.*
 .env.local
 
 # Log file

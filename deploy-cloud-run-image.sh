@@ -3,7 +3,7 @@
 set -Eeuo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DEFAULT_ENV_FILE="${ROOT_DIR}/.env"
+DEFAULT_ENV_FILE="${ROOT_DIR}/.env.staging"
 ENV_FILE="${ENV_FILE:-${DEFAULT_ENV_FILE}}"
 
 usage() {
